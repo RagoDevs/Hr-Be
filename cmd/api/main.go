@@ -8,15 +8,16 @@ import (
 	"sync"
 
 	"github.com/Hopertz/Hr-Be/config"
+	db "github.com/Hopertz/Hr-Be/internal/db/sqlc"
 )
 
 type application struct {
 	config config.Config
 	wg     sync.WaitGroup
+	store  db.Store
 }
 
 const version = "1.0.0"
-
 
 //	@title			Swagger Example API
 //	@version		1.0
@@ -56,6 +57,7 @@ func main() {
 
 	app := &application{
 		config: cfg,
+		store:  db.NewStore(conn),
 	}
 
 	slog.Info("Starting server on", "port", cfg.PORT)
