@@ -7,6 +7,15 @@ CREATE TABLE  IF NOT EXISTS role (
     name TEXT NOT NULL
 );
 
+INSERT INTO role (name)
+VALUES ('hr');
+
+INSERT INTO role (name)
+VALUES ('staff');
+
+INSERT INTO role (name)
+VALUES ('admin');
+
 
 CREATE TABLE IF NOT EXISTS users (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -17,9 +26,23 @@ CREATE TABLE IF NOT EXISTS users (
     
 );
 
+INSERT INTO users (role_id, email, password_hash)
+VALUES (
+    (SELECT id FROM role WHERE name = 'admin'), 
+    'admin@admin.com', 
+    '$2y$06$SnLcE85z.wBiHTEyehaEOu.AFoBzd3TLnoHNCqdm9kAGivuVl1YoG'
+);
+
+
+CREATE TABLE IF NOT EXISTS token (
+    hash bytea NOT NULL,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    expiry TIMESTAMP(0) NOT NULL
+);
 
 CREATE TABLE  IF NOT EXISTS  employee (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     name TEXT NOT NULL,
     dob DATE NOT NULL,
     avatar TEXT NOT NULL DEFAULT '',
@@ -30,6 +53,22 @@ CREATE TABLE  IF NOT EXISTS  employee (
     address TEXT NOT NULL,
     joining_date DATE NOT NULL
 );
+
+
+INSERT INTO employee (user_id, name, dob, avatar, phone, gender, job_title, department, address, joining_date)
+VALUES (
+    (SELECT id FROM users WHERE email = 'admin@admin.com'), 
+    'Admin Admin',
+    '1990-01-01', 
+    '', 
+    '0654051622', 
+    'Male',
+    'Admin', 
+    'Admin',
+    'Admin Address', 
+    '2024-04-29'
+);
+
 
 
 
@@ -57,11 +96,4 @@ CREATE TABLE  IF NOT EXISTS  leave (
     seen BOOLEAN NOT NULL DEFAULT FALSE
 );
 
-
-
-CREATE TABLE IF NOT EXISTS token (
-    hash bytea NOT NULL,
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    expiry TIMESTAMP(0) NOT NULL
-);
 
