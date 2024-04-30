@@ -88,7 +88,7 @@ CREATE TABLE  IF NOT EXISTS  contract (
 CREATE TABLE  IF NOT EXISTS  leave (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     employee_id UUID NOT NULL REFERENCES employee(id) ON DELETE CASCADE,
-    approved_by UUID NOT NULL REFERENCES employee(id) ON DELETE CASCADE,
+    approved_by_id UUID NOT NULL REFERENCES employee(id) ON DELETE CASCADE,
     approved BOOLEAN NOT NULL DEFAULT FALSE,
     description TEXT NOT NULL,
     start_date DATE NOT NULL,
