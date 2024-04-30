@@ -35,16 +35,16 @@ type Employee struct {
 }
 
 type Leave struct {
-	ID          uuid.UUID `json:"id"`
-	EmployeeID  uuid.UUID `json:"employee_id"`
-	ApprovedBy  uuid.UUID `json:"approved_by"`
-	Approved    bool      `json:"approved"`
-	Description string    `json:"description"`
-	StartDate   time.Time `json:"start_date"`
-	EndDate     time.Time `json:"end_date"`
-	LeaveCount  int16     `json:"leave_count"`
-	CreatedAt   time.Time `json:"created_at"`
-	Seen        bool      `json:"seen"`
+	ID           uuid.UUID `json:"id"`
+	EmployeeID   uuid.UUID `json:"employee_id"`
+	ApprovedByID uuid.UUID `json:"approved_by_id"`
+	Approved     bool      `json:"approved"`
+	Description  string    `json:"description"`
+	StartDate    time.Time `json:"start_date"`
+	EndDate      time.Time `json:"end_date"`
+	LeaveCount   int16     `json:"leave_count"`
+	CreatedAt    time.Time `json:"created_at"`
+	Seen         bool      `json:"seen"`
 }
 
 type Role struct {
