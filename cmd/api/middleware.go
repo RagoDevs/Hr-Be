@@ -61,17 +61,20 @@ func (app *application) authenticate(next echo.HandlerFunc) echo.HandlerFunc {
 
 }
 
-
 func (app *application) requireEnabledUser(next echo.HandlerFunc) echo.HandlerFunc {
 
 	return func(c echo.Context) error {
-		user, ok := c.Get("user").(*db.GetUserByTokenRow)
+		user, ok := c.Get("user").(db.GetUserByTokenRow)
 
-		if !ok || user == nil || !user.IsEnabled {
-			return c.JSON(http.StatusUnauthorized, "you are disabled user")
+		if !ok {
+			slog.Error("Error on requireEnabledUser middle ", "Error",  "type assertion of user in ctx")
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
 		}
-		
+
+		if !user.IsEnabled {
+			return c.JSON(http.StatusUnauthorized, map[string]string{"error": "you are disabled user"})
+		}
+
 		return next(c)
 	}
 }
-
