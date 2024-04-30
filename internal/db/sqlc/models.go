@@ -22,6 +22,7 @@ type Contract struct {
 
 type Employee struct {
 	ID          uuid.UUID `json:"id"`
+	UserID      uuid.UUID `json:"user_id"`
 	Name        string    `json:"name"`
 	Dob         time.Time `json:"dob"`
 	Avatar      string    `json:"avatar"`
@@ -55,6 +56,7 @@ type Token struct {
 	Hash   []byte    `json:"hash"`
 	UserID uuid.UUID `json:"user_id"`
 	Expiry time.Time `json:"expiry"`
+	Scope  string    `json:"scope"`
 }
 
 type User struct {
