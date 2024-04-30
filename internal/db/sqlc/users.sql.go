@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -16,7 +17,7 @@ INSERT INTO users (
     role_id, 
     email,
     password_hash)
-	VALUES ($1, $2, $3) RETURNING id, role_id, email, password_hash, created_at
+	VALUES ($1, $2, $3) RETURNING id, role_id, email, password_hash, is_enabled, created_at
 `
 
 type CreateUserParams struct {
@@ -33,6 +34,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.RoleID,
 		&i.Email,
 		&i.PasswordHash,
+		&i.IsEnabled,
 		&i.CreatedAt,
 	)
 	return i, err
@@ -72,6 +74,44 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (GetUserByEm
 		&i.RoleName,
 		&i.JobTitle,
 		&i.Department,
+	)
+	return i, err
+}
+
+const getUserByToken = `-- name: GetUserByToken :one
+SELECT u.id AS user_id, u.email, u.is_enabled,
+u.password_hash,r.name AS role_name
+FROM users u
+INNER JOIN token t ON u.id = t.user_id
+INNER JOIN role r ON u.role_id = r.id
+WHERE t.hash = $1
+AND t.scope = $2
+AND t.expiry > $3
+`
+
+type GetUserByTokenParams struct {
+	Hash   []byte    `json:"hash"`
+	Scope  string    `json:"scope"`
+	Expiry time.Time `json:"expiry"`
+}
+
+type GetUserByTokenRow struct {
+	UserID       uuid.UUID `json:"user_id"`
+	Email        string    `json:"email"`
+	IsEnabled    bool      `json:"is_enabled"`
+	PasswordHash []byte    `json:"password_hash"`
+	RoleName     string    `json:"role_name"`
+}
+
+func (q *Queries) GetUserByToken(ctx context.Context, arg GetUserByTokenParams) (GetUserByTokenRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserByToken, arg.Hash, arg.Scope, arg.Expiry)
+	var i GetUserByTokenRow
+	err := row.Scan(
+		&i.UserID,
+		&i.Email,
+		&i.IsEnabled,
+		&i.PasswordHash,
+		&i.RoleName,
 	)
 	return i, err
 }

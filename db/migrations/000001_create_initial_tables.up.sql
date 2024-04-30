@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS users (
     role_id UUID NOT NULL REFERENCES role(id) ON DELETE CASCADE,
     email citext UNIQUE NOT NULL,
     password_hash bytea NOT NULL,
+    is_enabled BOOLEAN NOT NULL DEFAULT TRUE, 
     created_at TIMESTAMP(0) NOT NULL DEFAULT NOW()
     
 );

@@ -12,6 +12,7 @@ type Querier interface {
 	CreateToken(ctx context.Context, arg CreateTokenParams) error
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error)
+	GetUserByToken(ctx context.Context, arg GetUserByTokenParams) (GetUserByTokenRow, error)
 }
 
 var _ Querier = (*Queries)(nil)

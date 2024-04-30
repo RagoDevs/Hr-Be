@@ -14,3 +14,14 @@ JOIN employee e ON u.id = e.user_id
 WHERE u.email = $1;
 
 
+-- name: GetUserByToken :one
+SELECT u.id AS user_id, u.email, u.is_enabled,
+u.password_hash,r.name AS role_name
+FROM users u
+INNER JOIN token t ON u.id = t.user_id
+INNER JOIN role r ON u.role_id = r.id
+WHERE t.hash = $1
+AND t.scope = $2
+AND t.expiry > $3;
+
+

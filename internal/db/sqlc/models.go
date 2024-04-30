@@ -64,5 +64,6 @@ type User struct {
 	RoleID       uuid.UUID `json:"role_id"`
 	Email        string    `json:"email"`
 	PasswordHash []byte    `json:"password_hash"`
+	IsEnabled    bool      `json:"is_enabled"`
 	CreatedAt    time.Time `json:"created_at"`
 }
