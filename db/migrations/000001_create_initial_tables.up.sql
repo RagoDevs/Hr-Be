@@ -37,7 +37,8 @@ VALUES (
 CREATE TABLE IF NOT EXISTS token (
     hash bytea NOT NULL,
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    expiry TIMESTAMP(0) NOT NULL
+    expiry TIMESTAMP(0) NOT NULL,
+    scope TEXT NOT NULL
 );
 
 CREATE TABLE  IF NOT EXISTS  employee (
