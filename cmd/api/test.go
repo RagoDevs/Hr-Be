@@ -8,7 +8,7 @@ import (
 
 func (app *application) testHandler(c echo.Context) error {
 
-	test := map[string]string {
+	test := map[string]string{
 		"test": "test test test",
 	}
 	return c.JSON(http.StatusOK, test)

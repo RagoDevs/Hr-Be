@@ -3,8 +3,8 @@ package config
 import (
 	"context"
 	"database/sql"
-	"time"
 	_ "github.com/lib/pq"
+	"time"
 )
 
 type Config struct {
@@ -12,13 +12,12 @@ type Config struct {
 	ENV  string
 
 	DB struct {
-		DSN string
+		DSN          string
 		MaxOpenConns int
 		MaxIdleConns int
 		MaxIdleTime  string
 	}
 }
-
 
 func OpenDB(cfg Config) (*sql.DB, error) {
 	db, err := sql.Open("postgres", cfg.DB.DSN)

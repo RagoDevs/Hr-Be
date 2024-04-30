@@ -67,7 +67,7 @@ func (app *application) requireEnabledUser(next echo.HandlerFunc) echo.HandlerFu
 		user, ok := c.Get("user").(db.GetUserByTokenRow)
 
 		if !ok {
-			slog.Error("Error on requireEnabledUser middle ", "Error",  "type assertion of user in ctx")
+			slog.Error("Error on requireEnabledUser middle ", "Error", "type assertion of user in ctx")
 			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
 		}
 

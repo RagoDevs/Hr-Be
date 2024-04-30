@@ -8,16 +8,16 @@ help:
 confirm:
 	@echo -n "Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ]
 
-# ## migrations/up: apply all up database migrations
-# .PHONY: migrations/up
-# migrations/up: confirm
-# 	migrate -path ./db/migrations -database ${HR_DB_DSN} --verbose up
+## migrations/up: apply all up database migrations
+.PHONY: migrations/up
+migrations/up: confirm
+	migrate -path ./db/migrations -database ${HR_DB_DSN} --verbose up
 
 
-# ## migrations/down: apply all down database migrations
-# .PHONY: migrations/down
-# migrations/down: confirm
-# 	migrate -path ./db/migrations -database ${HR_DB_DSN} --verbose down
+## migrations/down: apply all down database migrations
+.PHONY: migrations/down
+migrations/down: confirm
+	migrate -path ./db/migrations -database ${HR_DB_DSN} --verbose down
 
 
 ## migrations/new name=$1: create a new database migration
@@ -48,6 +48,27 @@ test:
 	go test -v -count=1 ./...
 
 
+
+## audit: tidy dependencies and format, vet and test all code
+.PHONY: audit
+audit: vendor
+	@echo "Formatting code..."
+	go fmt ./...
+	@echo "Vetting code..."
+	go vet ./...
+	staticcheck ./...
+	@echo "Running tests..."
+	go test -race -vet=off ./...
+
+
+## vendor: tidy and vendor dependencies
+.PHONY: vendor
+vendor:
+	@echo "Tidying and verifying module dependencies..."
+	go mod tidy
+	go mod verify
+	@echo "Vendoring dependencies..."
+	go mod vendor
 
 
 

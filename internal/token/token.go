@@ -15,7 +15,7 @@ const (
 )
 
 func NewToken(user_id uuid.UUID, ttl time.Duration, scope string) (*db.CreateTokenParams, string, error) {
-	
+
 	token, tokenText, err := generateToken(user_id, ttl, scope)
 	if err != nil {
 		return nil, tokenText, err
@@ -27,7 +27,7 @@ func NewToken(user_id uuid.UUID, ttl time.Duration, scope string) (*db.CreateTok
 func generateToken(user_id uuid.UUID, ttl time.Duration, scope string) (*db.CreateTokenParams, string, error) {
 
 	token := &db.CreateTokenParams{
-		UserID:     user_id,
+		UserID: user_id,
 		Expiry: time.Now().Add(ttl),
 		Scope:  scope,
 	}

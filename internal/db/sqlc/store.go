@@ -13,7 +13,6 @@ type SQLStore struct {
 	*Queries
 }
 
-
 func NewStore(db *sql.DB) Store {
 	return &SQLStore{
 		db:      db,

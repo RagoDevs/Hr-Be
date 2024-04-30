@@ -21,10 +21,10 @@ type TokenResponseFmt struct {
 
 type LoginResponseFmt struct {
 	UserID     uuid.UUID        `json:"user_id"`
-	EmployeeID uuid.UUID           `json:"employee_id"`
+	EmployeeID uuid.UUID        `json:"employee_id"`
 	Email      string           `json:"email"`
 	Role       string           `json:"role"`
-	Name  string           `json:"name"`
+	Name       string           `json:"name"`
 	Avatar     string           `json:"avatar"`
 	Token      TokenResponseFmt `json:"token"`
 }
@@ -80,20 +80,19 @@ func (app *application) login(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
 	}
 
-
 	tokenResponse := TokenResponseFmt{
 		Token:  tokenText,
 		Expiry: token.Expiry.Unix(),
 	}
 
 	login := LoginResponseFmt{
-		UserID:        user.UserID,
+		UserID:     user.UserID,
 		EmployeeID: user.EmployeeID,
-		Email:     user.Email,
-		Role:      user.RoleName,
-		Name: user.Name,
-		Avatar:    user.Avatar,
-		Token:     tokenResponse,
+		Email:      user.Email,
+		Role:       user.RoleName,
+		Name:       user.Name,
+		Avatar:     user.Avatar,
+		Token:      tokenResponse,
 	}
 
 	return c.JSON(200, login)
