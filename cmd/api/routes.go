@@ -25,6 +25,7 @@ func (app *application) routes() *echo.Echo {
 	e.Use(middleware.CORSWithConfig(DefaultCORSConfig))
 
 	e.GET("/ping", app.pingHandler)
+	e.POST("/login", app.login)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 
