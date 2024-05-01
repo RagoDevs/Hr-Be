@@ -33,6 +33,7 @@ type Employee struct {
 	Department  string    `json:"department"`
 	Address     string    `json:"address"`
 	JoiningDate time.Time `json:"joining_date"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 
 type Leave struct {

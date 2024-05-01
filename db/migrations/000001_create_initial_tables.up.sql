@@ -53,7 +53,8 @@ CREATE TABLE  IF NOT EXISTS  employee (
     job_title TEXT NOT NULL,
     department TEXT NOT NULL,
     address TEXT NOT NULL,
-    joining_date DATE NOT NULL
+    joining_date DATE NOT NULL,
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW()
 );
 
 
