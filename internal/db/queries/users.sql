@@ -5,6 +5,7 @@ INSERT INTO users (
     password_hash)
 	VALUES ($1, $2, $3) RETURNING *;
 
+
 -- name: GetUserByEmail :one
 SELECT u.id AS user_id ,e.id AS employee_id , e.name,e.avatar , u.email,
 u.password_hash, r.name AS role_name , e.job_title , e.department
@@ -23,5 +24,23 @@ INNER JOIN role r ON u.role_id = r.id
 WHERE t.hash = $1
 AND t.scope = $2
 AND t.expiry > $3;
+
+
+-- name: GetUserById :one
+SELECT * FROM  users  WHERE users.id = $1;
+
+
+-- name: UpdateUserById :exec
+UPDATE users
+SET
+    role_id = $1,
+    email = $2,
+    is_enabled = $3
+WHERE
+    id = $4;
+
+
+-- name: DeleteUser :exec
+DELETE FROM users WHERE id = $1;
 
 

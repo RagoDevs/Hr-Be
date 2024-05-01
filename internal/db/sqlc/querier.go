@@ -19,6 +19,7 @@ type Querier interface {
 	DeleteContract(ctx context.Context, id uuid.UUID) error
 	DeleteEmployeeById(ctx context.Context, id uuid.UUID) error
 	DeleteLeave(ctx context.Context, id uuid.UUID) error
+	DeleteUser(ctx context.Context, id uuid.UUID) error
 	GetAllContracts(ctx context.Context) ([]GetAllContractsRow, error)
 	GetAllEmployees(ctx context.Context) ([]GetAllEmployeesRow, error)
 	GetAllLeaves(ctx context.Context) ([]GetAllLeavesRow, error)
@@ -29,10 +30,12 @@ type Querier interface {
 	GetLeaveById(ctx context.Context, id uuid.UUID) (Leave, error)
 	GetLeaveByIdDetailed(ctx context.Context, id uuid.UUID) (GetLeaveByIdDetailedRow, error)
 	GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error)
+	GetUserById(ctx context.Context, id uuid.UUID) (User, error)
 	GetUserByToken(ctx context.Context, arg GetUserByTokenParams) (GetUserByTokenRow, error)
 	UpdateContract(ctx context.Context, arg UpdateContractParams) error
 	UpdateEmployeeById(ctx context.Context, arg UpdateEmployeeByIdParams) error
 	UpdateLeave(ctx context.Context, arg UpdateLeaveParams) error
+	UpdateUserById(ctx context.Context, arg UpdateUserByIdParams) error
 }
 
 var _ Querier = (*Queries)(nil)

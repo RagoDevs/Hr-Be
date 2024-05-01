@@ -40,6 +40,15 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	return i, err
 }
 
+const deleteUser = `-- name: DeleteUser :exec
+DELETE FROM users WHERE id = $1
+`
+
+func (q *Queries) DeleteUser(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, deleteUser, id)
+	return err
+}
+
 const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT u.id AS user_id ,e.id AS employee_id , e.name,e.avatar , u.email,
 u.password_hash, r.name AS role_name , e.job_title , e.department
@@ -74,6 +83,24 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (GetUserByEm
 		&i.RoleName,
 		&i.JobTitle,
 		&i.Department,
+	)
+	return i, err
+}
+
+const getUserById = `-- name: GetUserById :one
+SELECT id, role_id, email, password_hash, is_enabled, created_at FROM  users  WHERE users.id = $1
+`
+
+func (q *Queries) GetUserById(ctx context.Context, id uuid.UUID) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserById, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.RoleID,
+		&i.Email,
+		&i.PasswordHash,
+		&i.IsEnabled,
+		&i.CreatedAt,
 	)
 	return i, err
 }
@@ -114,4 +141,31 @@ func (q *Queries) GetUserByToken(ctx context.Context, arg GetUserByTokenParams) 
 		&i.RoleName,
 	)
 	return i, err
+}
+
+const updateUserById = `-- name: UpdateUserById :exec
+UPDATE users
+SET
+    role_id = $1,
+    email = $2,
+    is_enabled = $3
+WHERE
+    id = $4
+`
+
+type UpdateUserByIdParams struct {
+	RoleID    uuid.UUID `json:"role_id"`
+	Email     string    `json:"email"`
+	IsEnabled bool      `json:"is_enabled"`
+	ID        uuid.UUID `json:"id"`
+}
+
+func (q *Queries) UpdateUserById(ctx context.Context, arg UpdateUserByIdParams) error {
+	_, err := q.db.ExecContext(ctx, updateUserById,
+		arg.RoleID,
+		arg.Email,
+		arg.IsEnabled,
+		arg.ID,
+	)
+	return err
 }
