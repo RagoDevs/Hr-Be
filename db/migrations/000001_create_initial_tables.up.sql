@@ -81,7 +81,8 @@ CREATE TABLE  IF NOT EXISTS  contract (
     period INTEGER NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
-    attachment TEXT NOT NULL DEFAULT ''
+    attachment TEXT NOT NULL DEFAULT '',
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW()
 );
 
 
