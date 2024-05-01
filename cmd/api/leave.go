@@ -55,7 +55,7 @@ func (app *application) getAllLeavesHandler(c echo.Context) error {
 	leaves, err := app.store.GetAllLeaves(c.Request().Context())
 
 	if err != nil {
-		slog.Error("Error deleting leave ", "Error", err.Error())
+		slog.Error("Error getting leaves ", "Error", err.Error())
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
 	}
 
