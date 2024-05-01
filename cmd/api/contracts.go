@@ -1,0 +1,180 @@
+package main
+
+import (
+	"database/sql"
+	"errors"
+	"log/slog"
+	"net/http"
+	"time"
+
+	db "github.com/Hopertz/Hr-Be/internal/db/sqlc"
+	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
+)
+
+func (app *application) createContractHandler(c echo.Context) error {
+
+	var input struct {
+		EmployeeID   uuid.UUID `json:"employee_id"`
+		ContractType string    `json:"contract_type"`
+		StartDate    time.Time `json:"start_date"`
+		EndDate      time.Time `json:"end_date"`
+		Attachment   string    `json:"attachment"`
+	}
+
+	if err := c.Bind(&input); err != nil {
+		return err
+	}
+
+	period := input.EndDate.Sub(input.StartDate).Hours() / 24
+
+	args := db.CreateContractParams{
+		EmployeeID:   input.EmployeeID,
+		ContractType: input.ContractType,
+		Attachment:   input.Attachment,
+		StartDate:    input.StartDate,
+		EndDate:      input.EndDate,
+		Period:       int32(period),
+	}
+
+	err := app.store.CreateContract(c.Request().Context(), args)
+
+	if err != nil {
+		slog.Error("Error creating contract ", "Error", err.Error())
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+	}
+
+	return c.JSON(http.StatusCreated, map[string]string{"success": "contract created successful"})
+
+}
+
+func (app *application) getAllContractsHandler(c echo.Context) error {
+
+	contracts, err := app.store.GetAllContracts(c.Request().Context())
+
+	if err != nil {
+		slog.Error("Error getting contracts ", "Error", err.Error())
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+	}
+
+	return c.JSON(http.StatusOK, contracts)
+
+}
+
+func (app *application) getContractByIdHandler(c echo.Context) error {
+
+	id := c.Param("id")
+
+	contract_id, err := uuid.Parse(id)
+
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid uuid"})
+	}
+
+	leave, err := app.store.GetContractById(c.Request().Context(), contract_id)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": "not found"})
+
+		default:
+			slog.Error("Error get leave by id on getContractByIdHandler", "Error", err.Error())
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+		}
+	}
+	return c.JSON(http.StatusOK, leave)
+
+}
+
+func (app *application) updateContractByIdHandler(c echo.Context) error {
+
+	id := c.Param("id")
+
+	contract_id, err := uuid.Parse(id)
+
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid uuid"})
+	}
+
+	var input struct {
+		ContractType *string    `json:"contract_type"`
+		StartDate    *time.Time `json:"start_date"`
+		EndDate      *time.Time `json:"end_date"`
+		Attachment   *string    `json:"attachment"`
+	}
+
+	if err := c.Bind(&input); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+	}
+
+	contract, err := app.store.GetContractById(c.Request().Context(), contract_id)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": "not found"})
+
+		default:
+			slog.Error("Error on get leave by id on updateHandler", "Error", err.Error())
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+		}
+	}
+
+	if input.ContractType != nil {
+		contract.ContractType = *input.ContractType
+	}
+
+	if input.StartDate != nil {
+		contract.StartDate = *input.StartDate
+	}
+
+	if input.EndDate != nil {
+		contract.EndDate = *input.EndDate
+	}
+
+	if input.Attachment != nil {
+		contract.Attachment = *input.Attachment
+	}
+
+	contract.Period = int32(contract.EndDate.Sub(contract.StartDate).Hours() / 24)
+
+	args := db.UpdateContractParams{
+		ContractType: contract.ContractType,
+		StartDate:    contract.StartDate,
+		EndDate:      contract.EndDate,
+		Period:       contract.Period,
+		Attachment:   contract.Attachment,
+		ID:           contract_id,
+	}
+
+	err = app.store.UpdateContract(c.Request().Context(), args)
+
+	if err != nil {
+		slog.Error("Error updating contract ", "Error", err.Error())
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{"success": "contract updated successful"})
+
+}
+
+func (app *application) deleteContractHandler(c echo.Context) error {
+
+	id := c.Param("id")
+
+	contract_id, err := uuid.Parse(id)
+
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid uuid"})
+	}
+
+	err = app.store.DeleteContract(c.Request().Context(), contract_id)
+
+	if err != nil {
+		slog.Error("Error deleting contract ", "Error", err.Error())
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{"success": "contract deleted successful"})
+
+}
