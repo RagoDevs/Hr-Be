@@ -16,7 +16,8 @@ type Querier interface {
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteLeave(ctx context.Context, id uuid.UUID) error
 	GetAllLeaves(ctx context.Context) ([]GetAllLeavesRow, error)
-	GetLeaveById(ctx context.Context, id uuid.UUID) (GetLeaveByIdRow, error)
+	GetLeaveById(ctx context.Context, id uuid.UUID) (Leave, error)
+	GetLeaveByIdDetailed(ctx context.Context, id uuid.UUID) (GetLeaveByIdDetailedRow, error)
 	GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error)
 	GetUserByToken(ctx context.Context, arg GetUserByTokenParams) (GetUserByTokenRow, error)
 	UpdateLeave(ctx context.Context, arg UpdateLeaveParams) error

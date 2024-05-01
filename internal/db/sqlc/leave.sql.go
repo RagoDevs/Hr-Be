@@ -139,6 +139,28 @@ func (q *Queries) GetAllLeaves(ctx context.Context) ([]GetAllLeavesRow, error) {
 }
 
 const getLeaveById = `-- name: GetLeaveById :one
+SELECT id, employee_id, approved_by_id, approved, description, start_date, end_date, leave_count, created_at, seen FROM  leave WHERE leave.id = $1
+`
+
+func (q *Queries) GetLeaveById(ctx context.Context, id uuid.UUID) (Leave, error) {
+	row := q.db.QueryRowContext(ctx, getLeaveById, id)
+	var i Leave
+	err := row.Scan(
+		&i.ID,
+		&i.EmployeeID,
+		&i.ApprovedByID,
+		&i.Approved,
+		&i.Description,
+		&i.StartDate,
+		&i.EndDate,
+		&i.LeaveCount,
+		&i.CreatedAt,
+		&i.Seen,
+	)
+	return i, err
+}
+
+const getLeaveByIdDetailed = `-- name: GetLeaveByIdDetailed :one
 SELECT 
     l.id AS leave_id,
     e.name AS employee_name,
@@ -168,7 +190,7 @@ WHERE
     l.id = $1
 `
 
-type GetLeaveByIdRow struct {
+type GetLeaveByIdDetailedRow struct {
 	LeaveID         uuid.UUID `json:"leave_id"`
 	EmployeeName    string    `json:"employee_name"`
 	EmployeeEmail   string    `json:"employee_email"`
@@ -185,9 +207,9 @@ type GetLeaveByIdRow struct {
 	Seen            bool      `json:"seen"`
 }
 
-func (q *Queries) GetLeaveById(ctx context.Context, id uuid.UUID) (GetLeaveByIdRow, error) {
-	row := q.db.QueryRowContext(ctx, getLeaveById, id)
-	var i GetLeaveByIdRow
+func (q *Queries) GetLeaveByIdDetailed(ctx context.Context, id uuid.UUID) (GetLeaveByIdDetailedRow, error) {
+	row := q.db.QueryRowContext(ctx, getLeaveByIdDetailed, id)
+	var i GetLeaveByIdDetailedRow
 	err := row.Scan(
 		&i.LeaveID,
 		&i.EmployeeName,

@@ -9,6 +9,9 @@ INSERT INTO leave (
 	VALUES ($1, $2, $3, $4, $5, $6);
 
 
+-- name: GetLeaveById :one
+SELECT * FROM  leave WHERE leave.id = $1;
+
 
 -- name: UpdateLeave :exec
 UPDATE leave
@@ -56,7 +59,7 @@ ORDER BY
     l.created_at DESC;
 
 
--- name: GetLeaveById :one
+-- name: GetLeaveByIdDetailed :one
 SELECT 
     l.id AS leave_id,
     e.name AS employee_name,
