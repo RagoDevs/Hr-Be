@@ -11,15 +11,21 @@ import (
 )
 
 type Querier interface {
+	CreateContract(ctx context.Context, arg CreateContractParams) error
 	CreateLeave(ctx context.Context, arg CreateLeaveParams) error
 	CreateToken(ctx context.Context, arg CreateTokenParams) error
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	DeleteContract(ctx context.Context, id uuid.UUID) error
 	DeleteLeave(ctx context.Context, id uuid.UUID) error
+	GetAllContracts(ctx context.Context) ([]GetAllContractsRow, error)
 	GetAllLeaves(ctx context.Context) ([]GetAllLeavesRow, error)
+	GetContractById(ctx context.Context, id uuid.UUID) (Contract, error)
+	GetContractByIdDetailed(ctx context.Context, id uuid.UUID) (GetContractByIdDetailedRow, error)
 	GetLeaveById(ctx context.Context, id uuid.UUID) (Leave, error)
 	GetLeaveByIdDetailed(ctx context.Context, id uuid.UUID) (GetLeaveByIdDetailedRow, error)
 	GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error)
 	GetUserByToken(ctx context.Context, arg GetUserByTokenParams) (GetUserByTokenRow, error)
+	UpdateContract(ctx context.Context, arg UpdateContractParams) error
 	UpdateLeave(ctx context.Context, arg UpdateLeaveParams) error
 }
 

@@ -18,6 +18,7 @@ type Contract struct {
 	StartDate    time.Time `json:"start_date"`
 	EndDate      time.Time `json:"end_date"`
 	Attachment   string    `json:"attachment"`
+	CreatedAt    time.Time `json:"created_at"`
 }
 
 type Employee struct {
