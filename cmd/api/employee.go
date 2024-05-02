@@ -81,7 +81,7 @@ func (app *application) createEmployeeHandler(c echo.Context) error {
 
 }
 
-func (app *application) updateEmployeeHandler(c echo.Context) error {
+func (app *application) updateEmployeeByIdHandler(c echo.Context) error {
 
 	id := c.Param("id")
 
@@ -281,7 +281,7 @@ func (app *application) getEmployeeByIdHandler(c echo.Context) error {
 
 }
 
-func (app *application) deleteEmployeeHandler(c echo.Context) error {
+func (app *application) deleteEmployeeByIdHandler(c echo.Context) error {
 
 	id := c.Param("id")
 
