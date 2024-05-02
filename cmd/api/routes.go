@@ -36,6 +36,13 @@ func (app *application) routes() *echo.Echo {
 	g.GET("/test", app.testHandler)
 
 	
+	 // employees
+	g.GET("/employees", app.getAllEmployeesHandler)
+	g.GET("/employees/:id", app.getEmployeeByIdHandler)
+	g.POST("/employees", app.createEmployeeHandler)
+	g.PUT("/employees/:id", app.updateEmployeeByIdHandler)
+	g.DELETE("/employees/:id", app.deleteEmployeeByIdHandler)
+
 
 	// leaves
 	g.GET("/leaves", app.getAllLeavesHandler)
