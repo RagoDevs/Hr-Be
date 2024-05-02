@@ -35,14 +35,12 @@ func (app *application) routes() *echo.Echo {
 
 	g.GET("/test", app.testHandler)
 
-	
-	 // employees
+	// employees
 	g.GET("/employees", app.getAllEmployeesHandler)
 	g.GET("/employees/:id", app.getEmployeeByIdHandler)
 	g.POST("/employees", app.createEmployeeHandler)
 	g.PUT("/employees/:id", app.updateEmployeeByIdHandler)
 	g.DELETE("/employees/:id", app.deleteEmployeeByIdHandler)
-
 
 	// leaves
 	g.GET("/leaves", app.getAllLeavesHandler)
@@ -51,14 +49,12 @@ func (app *application) routes() *echo.Echo {
 	g.PUT("/leaves/:id", app.updateLeaveByIdHandler)
 	g.DELETE("/leaves/:id", app.deleteLeaveHandler)
 
-
-    // contracts
+	// contracts
 	g.GET("/contracts", app.getAllContractsHandler)
 	g.GET("/contracts/:id", app.getContractByIdHandler)
 	g.POST("/contracts", app.createContractHandler)
 	g.PUT("/contracts/:id", app.updateContractByIdHandler)
 	g.DELETE("/contracts/:id", app.deleteContractHandler)
-
 
 	return e
 
