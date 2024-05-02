@@ -40,7 +40,7 @@ WHERE
     id = $4;
 
 
--- name: DeleteUser :exec
+-- name: DeleteUserById :exec
 DELETE FROM users WHERE id = $1;
 
 
