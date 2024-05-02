@@ -29,6 +29,7 @@ type Querier interface {
 	GetEmployeeByIdDetailed(ctx context.Context, id uuid.UUID) (GetEmployeeByIdDetailedRow, error)
 	GetLeaveById(ctx context.Context, id uuid.UUID) (Leave, error)
 	GetLeaveByIdDetailed(ctx context.Context, id uuid.UUID) (GetLeaveByIdDetailedRow, error)
+	GetRoleByName(ctx context.Context, name string) (uuid.UUID, error)
 	GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error)
 	GetUserById(ctx context.Context, id uuid.UUID) (User, error)
 	GetUserByToken(ctx context.Context, arg GetUserByTokenParams) (GetUserByTokenRow, error)

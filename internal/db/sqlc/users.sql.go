@@ -148,16 +148,18 @@ UPDATE users
 SET
     role_id = $1,
     email = $2,
-    is_enabled = $3
+    is_enabled = $3,
+    password_hash = $4
 WHERE
-    id = $4
+    id = $5
 `
 
 type UpdateUserByIdParams struct {
-	RoleID    uuid.UUID `json:"role_id"`
-	Email     string    `json:"email"`
-	IsEnabled bool      `json:"is_enabled"`
-	ID        uuid.UUID `json:"id"`
+	RoleID       uuid.UUID `json:"role_id"`
+	Email        string    `json:"email"`
+	IsEnabled    bool      `json:"is_enabled"`
+	PasswordHash []byte    `json:"password_hash"`
+	ID           uuid.UUID `json:"id"`
 }
 
 func (q *Queries) UpdateUserById(ctx context.Context, arg UpdateUserByIdParams) error {
@@ -165,6 +167,7 @@ func (q *Queries) UpdateUserById(ctx context.Context, arg UpdateUserByIdParams) 
 		arg.RoleID,
 		arg.Email,
 		arg.IsEnabled,
+		arg.PasswordHash,
 		arg.ID,
 	)
 	return err
