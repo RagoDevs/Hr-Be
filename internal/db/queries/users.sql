@@ -35,9 +35,10 @@ UPDATE users
 SET
     role_id = $1,
     email = $2,
-    is_enabled = $3
+    is_enabled = $3,
+    password_hash = $4
 WHERE
-    id = $4;
+    id = $5;
 
 
 -- name: DeleteUserById :exec
