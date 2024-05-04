@@ -104,6 +104,7 @@ func (app *application) updateEmployeeByIdHandler(c echo.Context) error {
 		Department  *string    `json:"department"`
 		Address     *string    `json:"address"`
 		IsEnabled   *bool      `json:"is_enabled"`
+		IsPresent   *bool      `json:"is_present"`
 		JoiningDate *time.Time `json:"joining_date"`
 	}
 
@@ -218,6 +219,10 @@ func (app *application) updateEmployeeByIdHandler(c echo.Context) error {
 		employee.JoiningDate = *input.JoiningDate
 	}
 
+	if input.IsPresent != nil {
+		employee.IsPresent = *input.IsPresent
+	}
+
 	employee_args := db.UpdateEmployeeByIdParams{
 		Name:        employee.Name,
 		Dob:         employee.Dob,
@@ -228,6 +233,7 @@ func (app *application) updateEmployeeByIdHandler(c echo.Context) error {
 		Department:  employee.Department,
 		Address:     employee.Address,
 		JoiningDate: employee.JoiningDate,
+		IsPresent:   employee.IsPresent,
 		ID:          employee.ID,
 	}
 
@@ -265,7 +271,7 @@ func (app *application) getEmployeeByIdHandler(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid uuid"})
 	}
 
-	employee, err := app.store.GetEmployeeById(c.Request().Context(), employee_id)
+	employee, err := app.store.GetEmployeeByIdDetailed(c.Request().Context(), employee_id)
 
 	if err != nil {
 		switch {

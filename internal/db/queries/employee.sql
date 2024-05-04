@@ -39,10 +39,11 @@ SET
     job_title = $6,
     department = $7,
     address = $8,
-    joining_date = $9
+    joining_date = $9,
+    is_present = $10
 
 WHERE
-    id = $10;
+    id = $11;
 
 
 

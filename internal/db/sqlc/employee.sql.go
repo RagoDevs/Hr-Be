@@ -242,10 +242,11 @@ SET
     job_title = $6,
     department = $7,
     address = $8,
-    joining_date = $9
+    joining_date = $9,
+    is_present = $10
 
 WHERE
-    id = $10
+    id = $11
 `
 
 type UpdateEmployeeByIdParams struct {
@@ -258,6 +259,7 @@ type UpdateEmployeeByIdParams struct {
 	Department  string    `json:"department"`
 	Address     string    `json:"address"`
 	JoiningDate time.Time `json:"joining_date"`
+	IsPresent   bool      `json:"is_present"`
 	ID          uuid.UUID `json:"id"`
 }
 
@@ -272,6 +274,7 @@ func (q *Queries) UpdateEmployeeById(ctx context.Context, arg UpdateEmployeeById
 		arg.Department,
 		arg.Address,
 		arg.JoiningDate,
+		arg.IsPresent,
 		arg.ID,
 	)
 	return err
