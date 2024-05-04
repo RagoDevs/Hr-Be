@@ -55,28 +55,13 @@ WHERE id = $1;
 -- name: GetAllEmployees :many
 SELECT
     e.id AS employee_id,
-    e.user_id ,
-    u.email ,
-    u.is_enabled ,
-    u.role_id ,
-    r.name AS role_name,
     e.name AS employee_name,
-    e.dob ,
-    e.avatar ,
-    e.phone ,
-    e.gender ,
     e.job_title ,
-    e.department ,
-    e.address ,
-    e.joining_date ,
-    e.created_at 
+    e.department,
+    is_present 
+
 FROM
     employee e
-JOIN
-    users u ON e.user_id = u.id
-
-JOIN 
-    role r ON r.id =  u.role_id
 
 ORDER BY
     e.created_at DESC;
@@ -98,6 +83,7 @@ SELECT
     e.gender ,
     e.job_title ,
     e.department ,
+    e.is_present, 
     e.address ,
     e.joining_date ,
     e.created_at 

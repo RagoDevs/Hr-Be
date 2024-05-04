@@ -81,28 +81,13 @@ func (q *Queries) DeleteEmployeeById(ctx context.Context, id uuid.UUID) error {
 const getAllEmployees = `-- name: GetAllEmployees :many
 SELECT
     e.id AS employee_id,
-    e.user_id ,
-    u.email ,
-    u.is_enabled ,
-    u.role_id ,
-    r.name AS role_name,
     e.name AS employee_name,
-    e.dob ,
-    e.avatar ,
-    e.phone ,
-    e.gender ,
     e.job_title ,
-    e.department ,
-    e.address ,
-    e.joining_date ,
-    e.created_at 
+    e.department,
+    is_present 
+
 FROM
     employee e
-JOIN
-    users u ON e.user_id = u.id
-
-JOIN 
-    role r ON r.id =  u.role_id
 
 ORDER BY
     e.created_at DESC
@@ -110,21 +95,10 @@ ORDER BY
 
 type GetAllEmployeesRow struct {
 	EmployeeID   uuid.UUID `json:"employee_id"`
-	UserID       uuid.UUID `json:"user_id"`
-	Email        string    `json:"email"`
-	IsEnabled    bool      `json:"is_enabled"`
-	RoleID       uuid.UUID `json:"role_id"`
-	RoleName     string    `json:"role_name"`
 	EmployeeName string    `json:"employee_name"`
-	Dob          time.Time `json:"dob"`
-	Avatar       string    `json:"avatar"`
-	Phone        string    `json:"phone"`
-	Gender       string    `json:"gender"`
 	JobTitle     string    `json:"job_title"`
 	Department   string    `json:"department"`
-	Address      string    `json:"address"`
-	JoiningDate  time.Time `json:"joining_date"`
-	CreatedAt    time.Time `json:"created_at"`
+	IsPresent    bool      `json:"is_present"`
 }
 
 func (q *Queries) GetAllEmployees(ctx context.Context) ([]GetAllEmployeesRow, error) {
@@ -138,21 +112,10 @@ func (q *Queries) GetAllEmployees(ctx context.Context) ([]GetAllEmployeesRow, er
 		var i GetAllEmployeesRow
 		if err := rows.Scan(
 			&i.EmployeeID,
-			&i.UserID,
-			&i.Email,
-			&i.IsEnabled,
-			&i.RoleID,
-			&i.RoleName,
 			&i.EmployeeName,
-			&i.Dob,
-			&i.Avatar,
-			&i.Phone,
-			&i.Gender,
 			&i.JobTitle,
 			&i.Department,
-			&i.Address,
-			&i.JoiningDate,
-			&i.CreatedAt,
+			&i.IsPresent,
 		); err != nil {
 			return nil, err
 		}
@@ -168,7 +131,7 @@ func (q *Queries) GetAllEmployees(ctx context.Context) ([]GetAllEmployeesRow, er
 }
 
 const getEmployeeById = `-- name: GetEmployeeById :one
-SELECT id, user_id, name, dob, avatar, phone, gender, job_title, department, address, joining_date, created_at FROM  employee  WHERE employee.id = $1
+SELECT id, user_id, name, dob, avatar, phone, gender, job_title, department, address, is_present, joining_date, created_at FROM  employee  WHERE employee.id = $1
 `
 
 func (q *Queries) GetEmployeeById(ctx context.Context, id uuid.UUID) (Employee, error) {
@@ -185,6 +148,7 @@ func (q *Queries) GetEmployeeById(ctx context.Context, id uuid.UUID) (Employee, 
 		&i.JobTitle,
 		&i.Department,
 		&i.Address,
+		&i.IsPresent,
 		&i.JoiningDate,
 		&i.CreatedAt,
 	)
@@ -206,6 +170,7 @@ SELECT
     e.gender ,
     e.job_title ,
     e.department ,
+    e.is_present, 
     e.address ,
     e.joining_date ,
     e.created_at 
@@ -235,6 +200,7 @@ type GetEmployeeByIdDetailedRow struct {
 	Gender       string    `json:"gender"`
 	JobTitle     string    `json:"job_title"`
 	Department   string    `json:"department"`
+	IsPresent    bool      `json:"is_present"`
 	Address      string    `json:"address"`
 	JoiningDate  time.Time `json:"joining_date"`
 	CreatedAt    time.Time `json:"created_at"`
@@ -257,6 +223,7 @@ func (q *Queries) GetEmployeeByIdDetailed(ctx context.Context, id uuid.UUID) (Ge
 		&i.Gender,
 		&i.JobTitle,
 		&i.Department,
+		&i.IsPresent,
 		&i.Address,
 		&i.JoiningDate,
 		&i.CreatedAt,

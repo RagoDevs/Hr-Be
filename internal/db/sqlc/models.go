@@ -32,6 +32,7 @@ type Employee struct {
 	JobTitle    string    `json:"job_title"`
 	Department  string    `json:"department"`
 	Address     string    `json:"address"`
+	IsPresent   bool      `json:"is_present"`
 	JoiningDate time.Time `json:"joining_date"`
 	CreatedAt   time.Time `json:"created_at"`
 }
