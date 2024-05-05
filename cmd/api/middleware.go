@@ -78,3 +78,23 @@ func (app *application) requireEnabledUser(next echo.HandlerFunc) echo.HandlerFu
 		return next(c)
 	}
 }
+
+
+func (app *application) requireAdminOrHr(next echo.HandlerFunc) echo.HandlerFunc {
+
+	return func(c echo.Context) error {
+		user, ok := c.Get("user").(db.GetUserByTokenRow)
+
+		if !ok {
+			slog.Error("Error on requireEnabledUser middle ", "Error", "type assertion of user in ctx")
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+		}
+
+		if user.RoleName != "hr" && user.RoleName != "admin" {
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": "you must be an hr or admin"})
+		}
+
+		return next(c)
+	}
+}
+

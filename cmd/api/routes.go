@@ -36,11 +36,11 @@ func (app *application) routes() *echo.Echo {
 	g.GET("/test", app.testHandler)
 
 	// employees
-	g.GET("/employees", app.getAllEmployeesHandler)
-	g.GET("/employees/:id", app.getEmployeeByIdHandler)
-	g.POST("/employees", app.createEmployeeHandler)
-	g.PUT("/employees/:id", app.updateEmployeeByIdHandler)
-	g.DELETE("/employees/:id", app.deleteEmployeeByIdHandler)
+	g.GET("/employees", app.getAllEmployeesHandler, app.requireAdminOrHr)
+	g.GET("/employees/:id", app.getEmployeeByIdHandler, app.requireAdminOrHr)
+	g.POST("/employees", app.createEmployeeHandler, app.requireAdminOrHr)
+	g.PUT("/employees/:id", app.updateEmployeeByIdHandler, app.requireAdminOrHr)
+	g.DELETE("/employees/:id", app.deleteEmployeeByIdHandler, app.requireAdminOrHr)
 
 	// leaves
 	g.GET("/leaves", app.getAllLeavesHandler)
