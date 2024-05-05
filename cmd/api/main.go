@@ -37,7 +37,7 @@ const version = "1.0.0"
 func main() {
 	var cfg config.Config
 
-	flag.IntVar(&cfg.PORT, "port", 8186, "API server port")
+	flag.IntVar(&cfg.PORT, "port", 8376, "API server port")
 	flag.StringVar(&cfg.ENV, "env", "development", "Environment (development|Staging|production")
 	flag.StringVar(&cfg.DB.DSN, "db-dsn", os.Getenv("HR_DB_DSN"), "PostgresDB DSN")
 	flag.IntVar(&cfg.DB.MaxOpenConns, "db-max-open-conns", 25, "PostgreSQL max open connections")
