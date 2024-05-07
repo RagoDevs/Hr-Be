@@ -50,9 +50,9 @@ func (app *application) createLeaveHandler(c echo.Context) error {
 
 }
 
-func (app *application) getAllLeavesHandler(c echo.Context) error {
+func (app *application) getAllLeavesRequestsHandler(c echo.Context) error {
 
-	leaves, err := app.store.GetAllLeaves(c.Request().Context())
+	leaves, err := app.store.GetAllLeavesRequests(c.Request().Context())
 
 	if err != nil {
 		slog.Error("Error getting leaves ", "Error", err.Error())
@@ -63,37 +63,28 @@ func (app *application) getAllLeavesHandler(c echo.Context) error {
 
 }
 
-func (app *application) getLeaveByIdHandler(c echo.Context) error {
+func (app *application) getLeavesByEmployeeIdHandler(c echo.Context) error {
 
-	id := c.Param("id")
-
-	leave_id, err := uuid.Parse(id)
+	employee_id, err := uuid.Parse(c.Param("employee_id"))
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid uuid"})
 	}
 
-	leave, err := app.store.GetLeaveById(c.Request().Context(), leave_id)
+	leave, err := app.store.GetLeavesByEmployeeId(c.Request().Context(), employee_id)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			return c.JSON(http.StatusBadRequest, map[string]string{"error": "not found"})
-
-		default:
-			slog.Error("Error get leave by id on getLeaveByIdHandler", "Error", err.Error())
-			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
-		}
+		slog.Error("Error get leaves of employee_id on getLeavesByEmployeeIdHandler", "Error", err.Error())
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
 	}
+
 	return c.JSON(http.StatusOK, leave)
 
 }
 
 func (app *application) updateLeaveByIdHandler(c echo.Context) error {
 
-	id := c.Param("id")
-
-	leave_id, err := uuid.Parse(id)
+	leave_id, err := uuid.Parse(c.Param("employee_id"))
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid uuid"})
@@ -109,6 +100,7 @@ func (app *application) updateLeaveByIdHandler(c echo.Context) error {
 	}
 
 	if err := c.Bind(&input); err != nil {
+
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
@@ -119,7 +111,7 @@ func (app *application) updateLeaveByIdHandler(c echo.Context) error {
 			return c.JSON(http.StatusBadRequest, map[string]string{"error": "not found"})
 
 		default:
-			slog.Error("Error on get leave by id on updateHandler", "Error", err.Error())
+			slog.Error("Error on get leave by id on updateLeaveByIdHandler", "Error", err.Error())
 			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
 		}
 	}
@@ -174,9 +166,7 @@ func (app *application) updateLeaveByIdHandler(c echo.Context) error {
 
 func (app *application) deleteLeaveHandler(c echo.Context) error {
 
-	id := c.Param("id")
-
-	leave_id, err := uuid.Parse(id)
+	leave_id, err := uuid.Parse(c.Param("leave_id"))
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid uuid"})

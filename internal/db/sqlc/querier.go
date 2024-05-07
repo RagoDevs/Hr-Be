@@ -21,13 +21,13 @@ type Querier interface {
 	DeleteLeave(ctx context.Context, id uuid.UUID) error
 	DeleteUserById(ctx context.Context, id uuid.UUID) error
 	GetAllEmployees(ctx context.Context) ([]GetAllEmployeesRow, error)
-	GetAllLeaves(ctx context.Context) ([]GetAllLeavesRow, error)
+	GetAllLeavesRequests(ctx context.Context) ([]GetAllLeavesRequestsRow, error)
 	GetContractById(ctx context.Context, id uuid.UUID) (Contract, error)
 	GetContractsOfEmployeeByEmployeeId(ctx context.Context, id uuid.UUID) ([]GetContractsOfEmployeeByEmployeeIdRow, error)
 	GetEmployeeById(ctx context.Context, id uuid.UUID) (Employee, error)
 	GetEmployeeByIdDetailed(ctx context.Context, id uuid.UUID) (GetEmployeeByIdDetailedRow, error)
 	GetLeaveById(ctx context.Context, id uuid.UUID) (Leave, error)
-	GetLeaveByIdDetailed(ctx context.Context, id uuid.UUID) (GetLeaveByIdDetailedRow, error)
+	GetLeavesByEmployeeId(ctx context.Context, employeeID uuid.UUID) (GetLeavesByEmployeeIdRow, error)
 	GetRoleByName(ctx context.Context, name string) (uuid.UUID, error)
 	GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error)
 	GetUserById(ctx context.Context, id uuid.UUID) (User, error)

@@ -29,7 +29,7 @@ WHERE id = $8;
 DELETE FROM leave WHERE id = $1;
 
 
--- name: GetAllLeaves :many
+-- name: GetAllLeavesRequests :many
 SELECT 
     l.id AS leave_id,
     e.name AS employee_name,
@@ -55,19 +55,18 @@ JOIN
     employee ep ON l.approved_by_id = ep.id
 JOIN
     users up ON ep.user_id = up.id
+
+WHERE l.seen = FALSE
+
 ORDER BY
     l.created_at DESC;
 
 
--- name: GetLeaveByIdDetailed :one
+-- name: GetLeavesByEmployeeId :one
 SELECT 
     l.id AS leave_id,
-    e.name AS employee_name,
-    u.email AS employee_email,
-    l.employee_id, 
-    l.approved_by_id ,
-    ep.name AS approved_by_name,
-    up.email AS approved_by_email,
+    e.name AS approved_by_name,
+    u.email AS approved_by_email,
     l.approved, 
     l.description, 
     l.start_date, 
@@ -77,13 +76,13 @@ SELECT
     l.seen 
 FROM 
     leave l
+
 JOIN 
-    employee e ON e.id = l.employee_id
+    employee e ON l.approved_by_id = e.id
+
 JOIN
     users u ON e.user_id = u.id
-JOIN 
-    employee ep ON l.approved_by_id = ep.id
-JOIN
-    users up ON ep.user_id = up.id
+
 WHERE 
-    l.id = $1;
+    l.employee_id = $1;
+

@@ -53,7 +53,7 @@ func (q *Queries) DeleteLeave(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
-const getAllLeaves = `-- name: GetAllLeaves :many
+const getAllLeavesRequests = `-- name: GetAllLeavesRequests :many
 SELECT 
     l.id AS leave_id,
     e.name AS employee_name,
@@ -79,11 +79,14 @@ JOIN
     employee ep ON l.approved_by_id = ep.id
 JOIN
     users up ON ep.user_id = up.id
+
+WHERE l.seen = FALSE
+
 ORDER BY
     l.created_at DESC
 `
 
-type GetAllLeavesRow struct {
+type GetAllLeavesRequestsRow struct {
 	LeaveID         uuid.UUID `json:"leave_id"`
 	EmployeeName    string    `json:"employee_name"`
 	EmployeeEmail   string    `json:"employee_email"`
@@ -100,15 +103,15 @@ type GetAllLeavesRow struct {
 	Seen            bool      `json:"seen"`
 }
 
-func (q *Queries) GetAllLeaves(ctx context.Context) ([]GetAllLeavesRow, error) {
-	rows, err := q.db.QueryContext(ctx, getAllLeaves)
+func (q *Queries) GetAllLeavesRequests(ctx context.Context) ([]GetAllLeavesRequestsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getAllLeavesRequests)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetAllLeavesRow{}
+	items := []GetAllLeavesRequestsRow{}
 	for rows.Next() {
-		var i GetAllLeavesRow
+		var i GetAllLeavesRequestsRow
 		if err := rows.Scan(
 			&i.LeaveID,
 			&i.EmployeeName,
@@ -160,15 +163,11 @@ func (q *Queries) GetLeaveById(ctx context.Context, id uuid.UUID) (Leave, error)
 	return i, err
 }
 
-const getLeaveByIdDetailed = `-- name: GetLeaveByIdDetailed :one
+const getLeavesByEmployeeId = `-- name: GetLeavesByEmployeeId :one
 SELECT 
     l.id AS leave_id,
-    e.name AS employee_name,
-    u.email AS employee_email,
-    l.employee_id, 
-    l.approved_by_id ,
-    ep.name AS approved_by_name,
-    up.email AS approved_by_email,
+    e.name AS approved_by_name,
+    u.email AS approved_by_email,
     l.approved, 
     l.description, 
     l.start_date, 
@@ -178,24 +177,19 @@ SELECT
     l.seen 
 FROM 
     leave l
+
 JOIN 
-    employee e ON e.id = l.employee_id
+    employee e ON l.approved_by_id = e.id
+
 JOIN
     users u ON e.user_id = u.id
-JOIN 
-    employee ep ON l.approved_by_id = ep.id
-JOIN
-    users up ON ep.user_id = up.id
+
 WHERE 
-    l.id = $1
+    l.employee_id = $1
 `
 
-type GetLeaveByIdDetailedRow struct {
+type GetLeavesByEmployeeIdRow struct {
 	LeaveID         uuid.UUID `json:"leave_id"`
-	EmployeeName    string    `json:"employee_name"`
-	EmployeeEmail   string    `json:"employee_email"`
-	EmployeeID      uuid.UUID `json:"employee_id"`
-	ApprovedByID    uuid.UUID `json:"approved_by_id"`
 	ApprovedByName  string    `json:"approved_by_name"`
 	ApprovedByEmail string    `json:"approved_by_email"`
 	Approved        bool      `json:"approved"`
@@ -207,15 +201,11 @@ type GetLeaveByIdDetailedRow struct {
 	Seen            bool      `json:"seen"`
 }
 
-func (q *Queries) GetLeaveByIdDetailed(ctx context.Context, id uuid.UUID) (GetLeaveByIdDetailedRow, error) {
-	row := q.db.QueryRowContext(ctx, getLeaveByIdDetailed, id)
-	var i GetLeaveByIdDetailedRow
+func (q *Queries) GetLeavesByEmployeeId(ctx context.Context, employeeID uuid.UUID) (GetLeavesByEmployeeIdRow, error) {
+	row := q.db.QueryRowContext(ctx, getLeavesByEmployeeId, employeeID)
+	var i GetLeavesByEmployeeIdRow
 	err := row.Scan(
 		&i.LeaveID,
-		&i.EmployeeName,
-		&i.EmployeeEmail,
-		&i.EmployeeID,
-		&i.ApprovedByID,
 		&i.ApprovedByName,
 		&i.ApprovedByEmail,
 		&i.Approved,
