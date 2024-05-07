@@ -30,12 +30,6 @@ DELETE FROM contract WHERE id = $1;
 -- name: GetContractsOfEmployeeByEmployeeId :many
 SELECT
     c.id AS contract_id,
-    c.employee_id, 
-    e.name AS employee_name,
-    u.email AS employee_email,
-    e.avatar,
-    e.job_title,
-    e.department,
     c.contract_type,
     c.period,  
     c.start_date,
@@ -50,3 +44,29 @@ JOIN
     users u ON e.user_id = u.id
 WHERE 
     e.id = $1;
+
+
+
+-- -- name: GetContractsOfEmployeeByEmployeeId :many
+-- SELECT
+--     c.id AS contract_id,
+--     c.employee_id, 
+--     e.name AS employee_name,
+--     u.email AS employee_email,
+--     e.avatar,
+--     e.job_title,
+--     e.department,
+--     c.contract_type,
+--     c.period,  
+--     c.start_date,
+--     c.end_date,
+--     c.attachment
+    
+-- FROM 
+--     contract c
+-- JOIN 
+--     employee e ON e.id = c.employee_id
+-- JOIN
+--     users u ON e.user_id = u.id
+-- WHERE 
+--     e.id = $1;

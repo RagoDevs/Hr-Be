@@ -76,12 +76,6 @@ func (q *Queries) GetContractById(ctx context.Context, id uuid.UUID) (Contract, 
 const getContractsOfEmployeeByEmployeeId = `-- name: GetContractsOfEmployeeByEmployeeId :many
 SELECT
     c.id AS contract_id,
-    c.employee_id, 
-    e.name AS employee_name,
-    u.email AS employee_email,
-    e.avatar,
-    e.job_title,
-    e.department,
     c.contract_type,
     c.period,  
     c.start_date,
@@ -99,18 +93,12 @@ WHERE
 `
 
 type GetContractsOfEmployeeByEmployeeIdRow struct {
-	ContractID    uuid.UUID `json:"contract_id"`
-	EmployeeID    uuid.UUID `json:"employee_id"`
-	EmployeeName  string    `json:"employee_name"`
-	EmployeeEmail string    `json:"employee_email"`
-	Avatar        string    `json:"avatar"`
-	JobTitle      string    `json:"job_title"`
-	Department    string    `json:"department"`
-	ContractType  string    `json:"contract_type"`
-	Period        int32     `json:"period"`
-	StartDate     time.Time `json:"start_date"`
-	EndDate       time.Time `json:"end_date"`
-	Attachment    string    `json:"attachment"`
+	ContractID   uuid.UUID `json:"contract_id"`
+	ContractType string    `json:"contract_type"`
+	Period       int32     `json:"period"`
+	StartDate    time.Time `json:"start_date"`
+	EndDate      time.Time `json:"end_date"`
+	Attachment   string    `json:"attachment"`
 }
 
 func (q *Queries) GetContractsOfEmployeeByEmployeeId(ctx context.Context, id uuid.UUID) ([]GetContractsOfEmployeeByEmployeeIdRow, error) {
@@ -124,12 +112,6 @@ func (q *Queries) GetContractsOfEmployeeByEmployeeId(ctx context.Context, id uui
 		var i GetContractsOfEmployeeByEmployeeIdRow
 		if err := rows.Scan(
 			&i.ContractID,
-			&i.EmployeeID,
-			&i.EmployeeName,
-			&i.EmployeeEmail,
-			&i.Avatar,
-			&i.JobTitle,
-			&i.Department,
 			&i.ContractType,
 			&i.Period,
 			&i.StartDate,
