@@ -62,7 +62,7 @@ ORDER BY
     l.created_at DESC;
 
 
--- name: GetLeavesByEmployeeId :one
+-- name: GetLeavesByEmployeeId :many
 SELECT 
     l.id AS leave_id,
     e.name AS approved_by_name,

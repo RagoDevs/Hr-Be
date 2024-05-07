@@ -163,7 +163,7 @@ func (q *Queries) GetLeaveById(ctx context.Context, id uuid.UUID) (Leave, error)
 	return i, err
 }
 
-const getLeavesByEmployeeId = `-- name: GetLeavesByEmployeeId :one
+const getLeavesByEmployeeId = `-- name: GetLeavesByEmployeeId :many
 SELECT 
     l.id AS leave_id,
     e.name AS approved_by_name,
@@ -201,22 +201,38 @@ type GetLeavesByEmployeeIdRow struct {
 	Seen            bool      `json:"seen"`
 }
 
-func (q *Queries) GetLeavesByEmployeeId(ctx context.Context, employeeID uuid.UUID) (GetLeavesByEmployeeIdRow, error) {
-	row := q.db.QueryRowContext(ctx, getLeavesByEmployeeId, employeeID)
-	var i GetLeavesByEmployeeIdRow
-	err := row.Scan(
-		&i.LeaveID,
-		&i.ApprovedByName,
-		&i.ApprovedByEmail,
-		&i.Approved,
-		&i.Description,
-		&i.StartDate,
-		&i.EndDate,
-		&i.LeaveCount,
-		&i.CreatedAt,
-		&i.Seen,
-	)
-	return i, err
+func (q *Queries) GetLeavesByEmployeeId(ctx context.Context, employeeID uuid.UUID) ([]GetLeavesByEmployeeIdRow, error) {
+	rows, err := q.db.QueryContext(ctx, getLeavesByEmployeeId, employeeID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetLeavesByEmployeeIdRow{}
+	for rows.Next() {
+		var i GetLeavesByEmployeeIdRow
+		if err := rows.Scan(
+			&i.LeaveID,
+			&i.ApprovedByName,
+			&i.ApprovedByEmail,
+			&i.Approved,
+			&i.Description,
+			&i.StartDate,
+			&i.EndDate,
+			&i.LeaveCount,
+			&i.CreatedAt,
+			&i.Seen,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const updateLeave = `-- name: UpdateLeave :exec
