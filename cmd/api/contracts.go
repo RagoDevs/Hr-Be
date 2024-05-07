@@ -48,12 +48,20 @@ func (app *application) createContractHandler(c echo.Context) error {
 
 }
 
-func (app *application) getAllContractsHandler(c echo.Context) error {
+func (app *application) getAllContractsOfEmployeeByIdHandler(c echo.Context) error {
 
-	contracts, err := app.store.GetAllContracts(c.Request().Context())
+	id := c.Param("id")
+
+	employee_id, err := uuid.Parse(id)
 
 	if err != nil {
-		slog.Error("Error getting contracts ", "Error", err.Error())
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid uuid"})
+	}
+
+	contracts, err := app.store.GetContractsOfEmployeeByEmployeeId(c.Request().Context(), employee_id)
+
+	if err != nil {
+		slog.Error("Error getting contracts of employee ", "Error", err.Error())
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
 	}
 
@@ -61,31 +69,6 @@ func (app *application) getAllContractsHandler(c echo.Context) error {
 
 }
 
-func (app *application) getContractByIdHandler(c echo.Context) error {
-
-	id := c.Param("id")
-
-	contract_id, err := uuid.Parse(id)
-
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid uuid"})
-	}
-
-	leave, err := app.store.GetContractById(c.Request().Context(), contract_id)
-
-	if err != nil {
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			return c.JSON(http.StatusBadRequest, map[string]string{"error": "not found"})
-
-		default:
-			slog.Error("Error get leave by id on getContractByIdHandler", "Error", err.Error())
-			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
-		}
-	}
-	return c.JSON(http.StatusOK, leave)
-
-}
 
 func (app *application) updateContractByIdHandler(c echo.Context) error {
 

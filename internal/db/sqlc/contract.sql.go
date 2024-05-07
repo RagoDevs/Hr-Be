@@ -53,7 +53,27 @@ func (q *Queries) DeleteContract(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
-const getAllContracts = `-- name: GetAllContracts :many
+const getContractById = `-- name: GetContractById :one
+SELECT id, employee_id, contract_type, period, start_date, end_date, attachment, created_at FROM  contract  WHERE contract.id = $1
+`
+
+func (q *Queries) GetContractById(ctx context.Context, id uuid.UUID) (Contract, error) {
+	row := q.db.QueryRowContext(ctx, getContractById, id)
+	var i Contract
+	err := row.Scan(
+		&i.ID,
+		&i.EmployeeID,
+		&i.ContractType,
+		&i.Period,
+		&i.StartDate,
+		&i.EndDate,
+		&i.Attachment,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getContractsOfEmployeeByEmployeeId = `-- name: GetContractsOfEmployeeByEmployeeId :many
 SELECT
     c.id AS contract_id,
     c.employee_id, 
@@ -74,12 +94,11 @@ JOIN
     employee e ON e.id = c.employee_id
 JOIN
     users u ON e.user_id = u.id
-
-ORDER BY
-    c.created_at DESC
+WHERE 
+    e.id = $1
 `
 
-type GetAllContractsRow struct {
+type GetContractsOfEmployeeByEmployeeIdRow struct {
 	ContractID    uuid.UUID `json:"contract_id"`
 	EmployeeID    uuid.UUID `json:"employee_id"`
 	EmployeeName  string    `json:"employee_name"`
@@ -94,15 +113,15 @@ type GetAllContractsRow struct {
 	Attachment    string    `json:"attachment"`
 }
 
-func (q *Queries) GetAllContracts(ctx context.Context) ([]GetAllContractsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getAllContracts)
+func (q *Queries) GetContractsOfEmployeeByEmployeeId(ctx context.Context, id uuid.UUID) ([]GetContractsOfEmployeeByEmployeeIdRow, error) {
+	rows, err := q.db.QueryContext(ctx, getContractsOfEmployeeByEmployeeId, id)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetAllContractsRow{}
+	items := []GetContractsOfEmployeeByEmployeeIdRow{}
 	for rows.Next() {
-		var i GetAllContractsRow
+		var i GetContractsOfEmployeeByEmployeeIdRow
 		if err := rows.Scan(
 			&i.ContractID,
 			&i.EmployeeID,
@@ -128,86 +147,6 @@ func (q *Queries) GetAllContracts(ctx context.Context) ([]GetAllContractsRow, er
 		return nil, err
 	}
 	return items, nil
-}
-
-const getContractById = `-- name: GetContractById :one
-SELECT id, employee_id, contract_type, period, start_date, end_date, attachment, created_at FROM  contract  WHERE contract.id = $1
-`
-
-func (q *Queries) GetContractById(ctx context.Context, id uuid.UUID) (Contract, error) {
-	row := q.db.QueryRowContext(ctx, getContractById, id)
-	var i Contract
-	err := row.Scan(
-		&i.ID,
-		&i.EmployeeID,
-		&i.ContractType,
-		&i.Period,
-		&i.StartDate,
-		&i.EndDate,
-		&i.Attachment,
-		&i.CreatedAt,
-	)
-	return i, err
-}
-
-const getContractByIdDetailed = `-- name: GetContractByIdDetailed :one
-SELECT
-    c.id AS contract_id,
-    c.employee_id, 
-    e.name AS employee_name,
-    u.email AS employee_email,
-    e.avatar,
-    e.job_title,
-    e.department,
-    c.contract_type,
-    c.period,  
-    c.start_date,
-    c.end_date,
-    c.attachment
-    
-FROM 
-    contract c
-JOIN 
-    employee e ON e.id = c.employee_id
-JOIN
-    users u ON e.user_id = u.id
-WHERE 
-    c.id = $1
-`
-
-type GetContractByIdDetailedRow struct {
-	ContractID    uuid.UUID `json:"contract_id"`
-	EmployeeID    uuid.UUID `json:"employee_id"`
-	EmployeeName  string    `json:"employee_name"`
-	EmployeeEmail string    `json:"employee_email"`
-	Avatar        string    `json:"avatar"`
-	JobTitle      string    `json:"job_title"`
-	Department    string    `json:"department"`
-	ContractType  string    `json:"contract_type"`
-	Period        int32     `json:"period"`
-	StartDate     time.Time `json:"start_date"`
-	EndDate       time.Time `json:"end_date"`
-	Attachment    string    `json:"attachment"`
-}
-
-func (q *Queries) GetContractByIdDetailed(ctx context.Context, id uuid.UUID) (GetContractByIdDetailedRow, error) {
-	row := q.db.QueryRowContext(ctx, getContractByIdDetailed, id)
-	var i GetContractByIdDetailedRow
-	err := row.Scan(
-		&i.ContractID,
-		&i.EmployeeID,
-		&i.EmployeeName,
-		&i.EmployeeEmail,
-		&i.Avatar,
-		&i.JobTitle,
-		&i.Department,
-		&i.ContractType,
-		&i.Period,
-		&i.StartDate,
-		&i.EndDate,
-		&i.Attachment,
-	)
-	return i, err
 }
 
 const updateContract = `-- name: UpdateContract :exec
