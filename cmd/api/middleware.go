@@ -79,7 +79,6 @@ func (app *application) requireEnabledUser(next echo.HandlerFunc) echo.HandlerFu
 	}
 }
 
-
 func (app *application) requireAdminOrHr(next echo.HandlerFunc) echo.HandlerFunc {
 
 	return func(c echo.Context) error {
@@ -97,4 +96,3 @@ func (app *application) requireAdminOrHr(next echo.HandlerFunc) echo.HandlerFunc
 		return next(c)
 	}
 }
-
