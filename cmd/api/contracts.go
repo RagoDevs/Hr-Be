@@ -50,9 +50,7 @@ func (app *application) createContractHandler(c echo.Context) error {
 
 func (app *application) getAllContractsOfEmployeeByIdHandler(c echo.Context) error {
 
-	id := c.Param("id")
-
-	employee_id, err := uuid.Parse(id)
+	employee_id, err := uuid.Parse(c.Param("employee_id"))
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid uuid"})
@@ -69,12 +67,9 @@ func (app *application) getAllContractsOfEmployeeByIdHandler(c echo.Context) err
 
 }
 
-
 func (app *application) updateContractByIdHandler(c echo.Context) error {
 
-	id := c.Param("id")
-
-	contract_id, err := uuid.Parse(id)
+	contract_id, err := uuid.Parse(c.Param("contract_id"))
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid uuid"})
@@ -143,9 +138,7 @@ func (app *application) updateContractByIdHandler(c echo.Context) error {
 
 func (app *application) deleteContractHandler(c echo.Context) error {
 
-	id := c.Param("id")
-
-	contract_id, err := uuid.Parse(id)
+	contract_id, err := uuid.Parse(c.Param("contract_id"))
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid uuid"})

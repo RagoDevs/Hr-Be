@@ -50,10 +50,10 @@ func (app *application) routes() *echo.Echo {
 	g.DELETE("/leaves/:id", app.deleteLeaveHandler)
 
 	// contracts
-	g.GET("/contracts/:id", app.getAllContractsOfEmployeeByIdHandler)
+	g.GET("/contracts/:employee_id", app.getAllContractsOfEmployeeByIdHandler)
 	g.POST("/contracts", app.createContractHandler)
-	g.PUT("/contracts/:id", app.updateContractByIdHandler)
-	g.DELETE("/contracts/:id", app.deleteContractHandler)
+	g.PUT("/contracts/:contract_id", app.updateContractByIdHandler)
+	g.DELETE("/contracts/:contract_id", app.deleteContractHandler)
 
 	return e
 
