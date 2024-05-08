@@ -42,7 +42,7 @@ func (app *application) routes() *echo.Echo {
 	g.GET("/leaves/requests", app.getAllLeavesRequestsHandler)
 	g.GET("/leaves/employee/:employee_id", app.getLeavesByEmployeeIdHandler)
 	g.POST("/leaves", app.createLeaveHandler)
-	g.PUT("/leaves/:employee_id", app.updateLeaveByIdHandler)
+	g.PUT("/leaves/:leave_id", app.updateLeaveByIdHandler)
 	g.DELETE("/leaves/:leave_id", app.deleteLeaveHandler)
 
 	// contracts

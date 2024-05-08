@@ -84,7 +84,7 @@ func (app *application) getLeavesByEmployeeIdHandler(c echo.Context) error {
 
 func (app *application) updateLeaveByIdHandler(c echo.Context) error {
 
-	leave_id, err := uuid.Parse(c.Param("employee_id"))
+	leave_id, err := uuid.Parse(c.Param("leave_id"))
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid uuid"})
