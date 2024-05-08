@@ -182,3 +182,36 @@ func (app *application) deleteLeaveHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]string{"success": "leave deleted successful"})
 
 }
+
+func (app *application) respondToLeaveByIdHandler(c echo.Context) error {
+
+	leave_id, err := uuid.Parse(c.Param("leave_id"))
+
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid uuid"})
+	}
+
+	var input struct {
+		Approved bool `json:"approved"`
+	}
+
+	if err := c.Bind(&input); err != nil {
+
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+	}
+
+	args := db.ApproveRejectLeaveParams{
+		Approved: input.Approved,
+		ID:       leave_id,
+	}
+
+	err = app.store.ApproveRejectLeave(c.Request().Context(), args)
+
+	if err != nil {
+		slog.Error("Error approve/reject leave ", "Error", err.Error())
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{"success": "leave responded successful"})
+
+}
