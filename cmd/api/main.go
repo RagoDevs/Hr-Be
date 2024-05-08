@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/Hopertz/Hr-Be/config"
+	_ "github.com/Hopertz/Hr-Be/docs"
 	db "github.com/Hopertz/Hr-Be/internal/db/sqlc"
 )
 

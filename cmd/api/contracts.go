@@ -12,6 +12,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+
 func (app *application) createContractHandler(c echo.Context) error {
 
 	var input struct {

@@ -48,6 +48,11 @@ test:
 	go test -v -count=1 ./...
 
 
+## swag: Initialize swagger
+.PHONY: swag
+swag:
+	swag init -g ./cmd/api/main.go -o ./docs
+
 
 ## audit: tidy dependencies and format, vet and test all code
 .PHONY: audit
