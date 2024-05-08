@@ -98,3 +98,12 @@ JOIN
 
 WHERE 
     e.id = $1;
+
+
+
+-- name: PresentAbsentEmployeeById :exec
+UPDATE employee
+SET
+    is_present = $1
+WHERE
+    id = $2;

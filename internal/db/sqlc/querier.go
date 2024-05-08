@@ -33,6 +33,7 @@ type Querier interface {
 	GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error)
 	GetUserById(ctx context.Context, id uuid.UUID) (User, error)
 	GetUserByToken(ctx context.Context, arg GetUserByTokenParams) (GetUserByTokenRow, error)
+	PresentAbsentEmployeeById(ctx context.Context, arg PresentAbsentEmployeeByIdParams) error
 	UpdateContract(ctx context.Context, arg UpdateContractParams) error
 	UpdateEmployeeById(ctx context.Context, arg UpdateEmployeeByIdParams) error
 	UpdateLeave(ctx context.Context, arg UpdateLeaveParams) error

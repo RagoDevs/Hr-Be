@@ -231,6 +231,24 @@ func (q *Queries) GetEmployeeByIdDetailed(ctx context.Context, id uuid.UUID) (Ge
 	return i, err
 }
 
+const presentAbsentEmployeeById = `-- name: PresentAbsentEmployeeById :exec
+UPDATE employee
+SET
+    is_present = $1
+WHERE
+    id = $2
+`
+
+type PresentAbsentEmployeeByIdParams struct {
+	IsPresent bool      `json:"is_present"`
+	ID        uuid.UUID `json:"id"`
+}
+
+func (q *Queries) PresentAbsentEmployeeById(ctx context.Context, arg PresentAbsentEmployeeByIdParams) error {
+	_, err := q.db.ExecContext(ctx, presentAbsentEmployeeById, arg.IsPresent, arg.ID)
+	return err
+}
+
 const updateEmployeeById = `-- name: UpdateEmployeeById :exec
 UPDATE employee
 SET

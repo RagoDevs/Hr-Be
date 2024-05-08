@@ -82,3 +82,44 @@ func (store *SQLStore) TxnDeleteUserEmployee(ctx context.Context, args TxnUserEm
 	return tx.Commit()
 
 }
+
+func (store *SQLStore) TxnAcceptedRejectLeave(ctx context.Context, args ApproveRejectLeaveParams) error {
+
+	tx, err := store.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	qtx := New(tx)
+
+	err = qtx.ApproveRejectLeave(ctx, args)
+
+	if err != nil {
+		return err
+	}
+
+	if args.Approved {
+
+		leave, err := qtx.GetLeaveById(ctx, args.ID)
+
+		if err != nil {
+			return err
+		}
+
+		emp := PresentAbsentEmployeeByIdParams{
+			IsPresent: false,
+			ID:        leave.EmployeeID,
+		}
+
+		err = qtx.PresentAbsentEmployeeById(ctx, emp)
+
+		if err != nil {
+			return err
+		}
+
+	}
+
+	return tx.Commit()
+
+}
