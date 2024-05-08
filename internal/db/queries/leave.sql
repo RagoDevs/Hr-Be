@@ -86,3 +86,10 @@ JOIN
 WHERE 
     l.employee_id = $1;
 
+
+-- name: ApproveRejectLeave :exec
+UPDATE leave
+SET approved = $1,
+    seen = TRUE
+WHERE id = $2;
+

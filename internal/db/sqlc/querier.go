@@ -11,6 +11,7 @@ import (
 )
 
 type Querier interface {
+	ApproveRejectLeave(ctx context.Context, arg ApproveRejectLeaveParams) error
 	CreateContract(ctx context.Context, arg CreateContractParams) error
 	CreateEmployee(ctx context.Context, arg CreateEmployeeParams) error
 	CreateLeave(ctx context.Context, arg CreateLeaveParams) error

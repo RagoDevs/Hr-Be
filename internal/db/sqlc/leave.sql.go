@@ -12,6 +12,23 @@ import (
 	"github.com/google/uuid"
 )
 
+const approveRejectLeave = `-- name: ApproveRejectLeave :exec
+UPDATE leave
+SET approved = $1,
+    seen = TRUE
+WHERE id = $2
+`
+
+type ApproveRejectLeaveParams struct {
+	Approved bool      `json:"approved"`
+	ID       uuid.UUID `json:"id"`
+}
+
+func (q *Queries) ApproveRejectLeave(ctx context.Context, arg ApproveRejectLeaveParams) error {
+	_, err := q.db.ExecContext(ctx, approveRejectLeave, arg.Approved, arg.ID)
+	return err
+}
+
 const createLeave = `-- name: CreateLeave :exec
 INSERT INTO leave (
     employee_id, 
