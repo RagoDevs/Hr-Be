@@ -5,9 +5,6 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	echoSwagger "github.com/swaggo/echo-swagger"
-
-	_ "github.com/swaggo/echo-swagger/example/docs"
 )
 
 func (app *application) routes() *echo.Echo {
@@ -26,7 +23,6 @@ func (app *application) routes() *echo.Echo {
 
 	e.GET("/ping", app.pingHandler)
 	e.POST("/login", app.login)
-	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	g := e.Group("/auth")
 
