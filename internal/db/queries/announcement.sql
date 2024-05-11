@@ -1,4 +1,4 @@
--- name: CreateAnnoucemnt :exec
+-- name: CreateAnnouncement :exec
 INSERT INTO announcement (
     description,
     announcement_date,
@@ -7,7 +7,7 @@ INSERT INTO announcement (
 VALUES ($1, $2, $3);
 
 
--- name: GetAnnouncement :one
+-- name: GetAnnouncementById :one
 SELECT *
 FROM  announcement
 WHERE id = $1;

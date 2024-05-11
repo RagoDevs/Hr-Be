@@ -12,7 +12,7 @@ import (
 	"github.com/google/uuid"
 )
 
-const createAnnoucemnt = `-- name: CreateAnnoucemnt :exec
+const createAnnouncement = `-- name: CreateAnnouncement :exec
 INSERT INTO announcement (
     description,
     announcement_date,
@@ -21,14 +21,14 @@ INSERT INTO announcement (
 VALUES ($1, $2, $3)
 `
 
-type CreateAnnoucemntParams struct {
+type CreateAnnouncementParams struct {
 	Description      string    `json:"description"`
 	AnnouncementDate time.Time `json:"announcement_date"`
 	CreatedBy        uuid.UUID `json:"created_by"`
 }
 
-func (q *Queries) CreateAnnoucemnt(ctx context.Context, arg CreateAnnoucemntParams) error {
-	_, err := q.db.ExecContext(ctx, createAnnoucemnt, arg.Description, arg.AnnouncementDate, arg.CreatedBy)
+func (q *Queries) CreateAnnouncement(ctx context.Context, arg CreateAnnouncementParams) error {
+	_, err := q.db.ExecContext(ctx, createAnnouncement, arg.Description, arg.AnnouncementDate, arg.CreatedBy)
 	return err
 }
 
@@ -41,14 +41,14 @@ func (q *Queries) DeleteAnnouncement(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
-const getAnnouncement = `-- name: GetAnnouncement :one
+const getAnnouncementById = `-- name: GetAnnouncementById :one
 SELECT id, description, announcement_date, created_by, created_at
 FROM  announcement
 WHERE id = $1
 `
 
-func (q *Queries) GetAnnouncement(ctx context.Context, id uuid.UUID) (Announcement, error) {
-	row := q.db.QueryRowContext(ctx, getAnnouncement, id)
+func (q *Queries) GetAnnouncementById(ctx context.Context, id uuid.UUID) (Announcement, error) {
+	row := q.db.QueryRowContext(ctx, getAnnouncementById, id)
 	var i Announcement
 	err := row.Scan(
 		&i.ID,

@@ -12,7 +12,7 @@ import (
 
 type Querier interface {
 	ApproveRejectLeave(ctx context.Context, arg ApproveRejectLeaveParams) error
-	CreateAnnoucemnt(ctx context.Context, arg CreateAnnoucemntParams) error
+	CreateAnnouncement(ctx context.Context, arg CreateAnnouncementParams) error
 	CreateContract(ctx context.Context, arg CreateContractParams) error
 	CreateEmployee(ctx context.Context, arg CreateEmployeeParams) error
 	CreateLeave(ctx context.Context, arg CreateLeaveParams) error
@@ -25,7 +25,7 @@ type Querier interface {
 	DeleteUserById(ctx context.Context, id uuid.UUID) error
 	GetAllEmployees(ctx context.Context) ([]GetAllEmployeesRow, error)
 	GetAllLeavesRequests(ctx context.Context) ([]GetAllLeavesRequestsRow, error)
-	GetAnnouncement(ctx context.Context, id uuid.UUID) (Announcement, error)
+	GetAnnouncementById(ctx context.Context, id uuid.UUID) (Announcement, error)
 	GetAnnouncements(ctx context.Context) ([]GetAnnouncementsRow, error)
 	GetContractById(ctx context.Context, id uuid.UUID) (Contract, error)
 	GetContractsOfEmployeeByEmployeeId(ctx context.Context, id uuid.UUID) ([]GetContractsOfEmployeeByEmployeeIdRow, error)
