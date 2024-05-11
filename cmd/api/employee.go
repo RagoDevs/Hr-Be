@@ -16,22 +16,26 @@ import (
 func (app *application) createEmployeeHandler(c echo.Context) error {
 
 	var input struct {
-		Name        string    `json:"name"`
-		Email       string    `json:"email"`
-		Password    string    `json:"password"`
-		Role        string    `json:"role"`
-		DoB         time.Time `json:"dob"`
+		Name        string    `json:"name" validate:"required,min=3"`
+		Email       string    `json:"email" validate:"required=email"`
+		Password    string    `json:"password" validate:"required,min=6"`
+		Role        string    `json:"role" validate:"required,min=4"`
+		DoB         time.Time `json:"dob" validate:"required"`
 		Avatar      string    `json:"avatar"`
-		Phone       string    `json:"phone"`
-		Gender      string    `json:"gender"`
-		JobTitle    string    `json:"job_title"`
-		Department  string    `json:"department"`
-		Address     string    `json:"address"`
-		JoiningDate time.Time `json:"joining_date"`
+		Phone       string    `json:"phone" validate:"required,min=10"`
+		Gender      string    `json:"gender" validate:"required,min=4"`
+		JobTitle    string    `json:"job_title" validate:"required,min=2"`
+		Department  string    `json:"department" validate:"required,min=2"`
+		Address     string    `json:"address" validate:"required,min=2"`
+		JoiningDate time.Time `json:"joining_date" validate:"required"`
 	}
 
 	if err := c.Bind(&input); err != nil {
 		return err
+	}
+
+	if err := app.validator.Struct(input); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
 	password_hash, err := bcrypt.GenerateFromPassword([]byte(input.Password), 6)

@@ -9,12 +9,14 @@ import (
 
 	"github.com/Hopertz/Hr-Be/config"
 	db "github.com/Hopertz/Hr-Be/internal/db/sqlc"
+	"gopkg.in/go-playground/validator.v9"
 )
 
 type application struct {
-	config config.Config
-	wg     sync.WaitGroup
-	store  db.Store
+	config    config.Config
+	wg        sync.WaitGroup
+	store     db.Store
+	validator *validator.Validate
 }
 
 const version = "1.0.0"
@@ -41,8 +43,9 @@ func main() {
 	slog.Info("database connection established")
 
 	app := &application{
-		config: cfg,
-		store:  db.NewStore(conn),
+		config:    cfg,
+		store:     db.NewStore(conn),
+		validator: validator.New(),
 	}
 
 	slog.Info("Starting server on", "port", cfg.PORT)
