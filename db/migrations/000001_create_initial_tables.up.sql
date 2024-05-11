@@ -102,3 +102,10 @@ CREATE TABLE  IF NOT EXISTS  leave (
 );
 
 
+CREATE TABLE  IF NOT EXISTS announcement (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    description TEXT NOT NULL, 
+    announcement_date DATE NOT NULL,
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW()
+);
+
