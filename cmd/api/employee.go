@@ -77,7 +77,7 @@ func (app *application) createEmployeeHandler(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
 	}
 
-	return c.JSON(http.StatusCreated, map[string]string{"success": "user & employee created successful"})
+	return c.JSON(http.StatusCreated, map[string]string{"success": "employee created successful"})
 
 }
 
@@ -244,7 +244,7 @@ func (app *application) updateEmployeeByIdHandler(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
 	}
 
-	return c.JSON(http.StatusCreated, map[string]string{"success": "user & employee created successful"})
+	return c.JSON(http.StatusOK, map[string]string{"success": "employee created successful"})
 
 }
 
