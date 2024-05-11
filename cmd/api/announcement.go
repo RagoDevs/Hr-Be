@@ -15,13 +15,17 @@ import (
 func (app *application) createAnnouncementHandler(c echo.Context) error {
 
 	var input struct {
-		Description      string    `json:"description"`
-		CreatedBy        uuid.UUID `json:"createdby_id"`
-		AnnouncementDate time.Time `json:"date"`
+		Description      string    `json:"description" validate:"required,min=3"`
+		CreatedBy        uuid.UUID `json:"createdby_id" validate:"required"`
+		AnnouncementDate time.Time `json:"date" validate:"required"`
 	}
 
 	if err := c.Bind(&input); err != nil {
 		return err
+	}
+
+	if err := app.validator.Struct(input); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
 	args := db.CreateAnnouncementParams{
