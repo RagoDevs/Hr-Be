@@ -93,7 +93,7 @@ func (app *application) updateContractByIdHandler(c echo.Context) error {
 			return c.JSON(http.StatusBadRequest, map[string]string{"error": "not found"})
 
 		default:
-			slog.Error("Error on get leave by id on updateHandler", "Error", err.Error())
+			slog.Error("Error on get contract by id on updateContractByIdHandler", "Error", err.Error())
 			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
 		}
 	}
