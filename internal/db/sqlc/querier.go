@@ -12,17 +12,21 @@ import (
 
 type Querier interface {
 	ApproveRejectLeave(ctx context.Context, arg ApproveRejectLeaveParams) error
+	CreateAnnoucemnt(ctx context.Context, arg CreateAnnoucemntParams) error
 	CreateContract(ctx context.Context, arg CreateContractParams) error
 	CreateEmployee(ctx context.Context, arg CreateEmployeeParams) error
 	CreateLeave(ctx context.Context, arg CreateLeaveParams) error
 	CreateToken(ctx context.Context, arg CreateTokenParams) error
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	DeleteAnnouncement(ctx context.Context, id uuid.UUID) error
 	DeleteContract(ctx context.Context, id uuid.UUID) error
 	DeleteEmployeeById(ctx context.Context, id uuid.UUID) error
 	DeleteLeave(ctx context.Context, id uuid.UUID) error
 	DeleteUserById(ctx context.Context, id uuid.UUID) error
 	GetAllEmployees(ctx context.Context) ([]GetAllEmployeesRow, error)
 	GetAllLeavesRequests(ctx context.Context) ([]GetAllLeavesRequestsRow, error)
+	GetAnnouncement(ctx context.Context, id uuid.UUID) (Announcement, error)
+	GetAnnouncements(ctx context.Context) ([]GetAnnouncementsRow, error)
 	GetContractById(ctx context.Context, id uuid.UUID) (Contract, error)
 	GetContractsOfEmployeeByEmployeeId(ctx context.Context, id uuid.UUID) ([]GetContractsOfEmployeeByEmployeeIdRow, error)
 	GetEmployeeById(ctx context.Context, id uuid.UUID) (Employee, error)
@@ -34,6 +38,7 @@ type Querier interface {
 	GetUserById(ctx context.Context, id uuid.UUID) (User, error)
 	GetUserByToken(ctx context.Context, arg GetUserByTokenParams) (GetUserByTokenRow, error)
 	PresentAbsentEmployeeById(ctx context.Context, arg PresentAbsentEmployeeByIdParams) error
+	UpdateAnnouncement(ctx context.Context, arg UpdateAnnouncementParams) error
 	UpdateContract(ctx context.Context, arg UpdateContractParams) error
 	UpdateEmployeeById(ctx context.Context, arg UpdateEmployeeByIdParams) error
 	UpdateLeave(ctx context.Context, arg UpdateLeaveParams) error

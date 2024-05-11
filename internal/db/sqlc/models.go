@@ -10,6 +10,14 @@ import (
 	"github.com/google/uuid"
 )
 
+type Announcement struct {
+	ID               uuid.UUID `json:"id"`
+	Description      string    `json:"description"`
+	AnnouncementDate time.Time `json:"announcement_date"`
+	CreatedBy        uuid.UUID `json:"created_by"`
+	CreatedAt        time.Time `json:"created_at"`
+}
+
 type Contract struct {
 	ID           uuid.UUID `json:"id"`
 	EmployeeID   uuid.UUID `json:"employee_id"`
