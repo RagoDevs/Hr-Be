@@ -15,7 +15,7 @@ import (
 func (app *application) createAnnouncementHandler(c echo.Context) error {
 
 	var input struct {
-		Description      string    `json:"description" validate:"required,min=3"`
+		Description      string    `json:"description" validate:"required"`
 		CreatedBy        uuid.UUID `json:"createdby_id" validate:"required"`
 		AnnouncementDate time.Time `json:"date" validate:"required"`
 	}
