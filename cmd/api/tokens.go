@@ -32,12 +32,16 @@ type LoginResponseFmt struct {
 func (app *application) login(c echo.Context) error {
 
 	var input struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
+		Email    string `json:"email" validate:"required,email"`
+		Password string `json:"password" validate:"required,min=6"`
 	}
 
 	if err := c.Bind(&input); err != nil {
 		return err
+	}
+
+	if err := app.validator.Struct(input); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
 	user, err := app.store.GetUserByEmail(c.Request().Context(), input.Email)
