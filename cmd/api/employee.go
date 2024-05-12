@@ -16,17 +16,17 @@ import (
 func (app *application) createEmployeeHandler(c echo.Context) error {
 
 	var input struct {
-		Name        string    `json:"name" validate:"required,min=3"`
-		Email       string    `json:"email" validate:"required=email"`
+		Name        string    `json:"name" validate:"required"`
+		Email       string    `json:"email" validate:"required,email"`
 		Password    string    `json:"password" validate:"required,min=6"`
-		Role        string    `json:"role" validate:"required,min=4"`
+		Role        string    `json:"role" validate:"required"`
 		DoB         time.Time `json:"dob" validate:"required"`
 		Avatar      string    `json:"avatar"`
-		Phone       string    `json:"phone" validate:"required,min=10"`
-		Gender      string    `json:"gender" validate:"required,min=4"`
-		JobTitle    string    `json:"job_title" validate:"required,min=2"`
-		Department  string    `json:"department" validate:"required,min=2"`
-		Address     string    `json:"address" validate:"required,min=2"`
+		Phone       string    `json:"phone" validate:"required"`
+		Gender      string    `json:"gender" validate:"required"`
+		JobTitle    string    `json:"job_title" validate:"required"`
+		Department  string    `json:"department" validate:"required"`
+		Address     string    `json:"address" validate:"required"`
 		JoiningDate time.Time `json:"joining_date" validate:"required"`
 	}
 
