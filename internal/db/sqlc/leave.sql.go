@@ -74,6 +74,7 @@ const getAllLeavesApproved = `-- name: GetAllLeavesApproved :many
 SELECT 
     l.id AS leave_id,
     e.name AS employee_name,
+    e.department,
     u.email AS employee_email,
     l.employee_id, 
     l.approved_by_id ,
@@ -105,6 +106,7 @@ ORDER BY l.created_at DESC
 type GetAllLeavesApprovedRow struct {
 	LeaveID         uuid.UUID `json:"leave_id"`
 	EmployeeName    string    `json:"employee_name"`
+	Department      string    `json:"department"`
 	EmployeeEmail   string    `json:"employee_email"`
 	EmployeeID      uuid.UUID `json:"employee_id"`
 	ApprovedByID    uuid.UUID `json:"approved_by_id"`
@@ -131,6 +133,7 @@ func (q *Queries) GetAllLeavesApproved(ctx context.Context) ([]GetAllLeavesAppro
 		if err := rows.Scan(
 			&i.LeaveID,
 			&i.EmployeeName,
+			&i.Department,
 			&i.EmployeeEmail,
 			&i.EmployeeID,
 			&i.ApprovedByID,
@@ -161,6 +164,7 @@ const getAllLeavesUnSeenTopBottomSeen = `-- name: GetAllLeavesUnSeenTopBottomSee
 SELECT 
     l.id AS leave_id,
     e.name AS employee_name,
+    e.department,
     u.email AS employee_email,
     l.employee_id, 
     l.approved_by_id ,
@@ -190,6 +194,7 @@ ORDER BY l.seen ASC, l.created_at DESC
 type GetAllLeavesUnSeenTopBottomSeenRow struct {
 	LeaveID         uuid.UUID `json:"leave_id"`
 	EmployeeName    string    `json:"employee_name"`
+	Department      string    `json:"department"`
 	EmployeeEmail   string    `json:"employee_email"`
 	EmployeeID      uuid.UUID `json:"employee_id"`
 	ApprovedByID    uuid.UUID `json:"approved_by_id"`
@@ -216,6 +221,7 @@ func (q *Queries) GetAllLeavesUnSeenTopBottomSeen(ctx context.Context) ([]GetAll
 		if err := rows.Scan(
 			&i.LeaveID,
 			&i.EmployeeName,
+			&i.Department,
 			&i.EmployeeEmail,
 			&i.EmployeeID,
 			&i.ApprovedByID,
@@ -268,6 +274,7 @@ const getLeavesByEmployeeId = `-- name: GetLeavesByEmployeeId :many
 SELECT 
     l.id AS leave_id,
     e.name AS approved_by_name,
+    e.department,
     u.email AS approved_by_email,
     l.approved, 
     l.description, 
@@ -292,6 +299,7 @@ WHERE
 type GetLeavesByEmployeeIdRow struct {
 	LeaveID         uuid.UUID `json:"leave_id"`
 	ApprovedByName  string    `json:"approved_by_name"`
+	Department      string    `json:"department"`
 	ApprovedByEmail string    `json:"approved_by_email"`
 	Approved        bool      `json:"approved"`
 	Description     string    `json:"description"`
@@ -314,6 +322,7 @@ func (q *Queries) GetLeavesByEmployeeId(ctx context.Context, employeeID uuid.UUI
 		if err := rows.Scan(
 			&i.LeaveID,
 			&i.ApprovedByName,
+			&i.Department,
 			&i.ApprovedByEmail,
 			&i.Approved,
 			&i.Description,

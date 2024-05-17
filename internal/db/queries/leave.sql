@@ -33,6 +33,7 @@ DELETE FROM leave WHERE id = $1;
 SELECT 
     l.id AS leave_id,
     e.name AS employee_name,
+    e.department,
     u.email AS employee_email,
     l.employee_id, 
     l.approved_by_id ,
@@ -63,6 +64,7 @@ ORDER BY l.seen ASC, l.created_at DESC;
 SELECT 
     l.id AS leave_id,
     e.name AS employee_name,
+    e.department,
     u.email AS employee_email,
     l.employee_id, 
     l.approved_by_id ,
@@ -95,6 +97,7 @@ ORDER BY l.created_at DESC;
 SELECT 
     l.id AS leave_id,
     e.name AS approved_by_name,
+    e.department,
     u.email AS approved_by_email,
     l.approved, 
     l.description, 
