@@ -50,9 +50,9 @@ func (app *application) createLeaveHandler(c echo.Context) error {
 
 }
 
-func (app *application) getAllLeavesRequestsHandler(c echo.Context) error {
+func (app *application) getAllLeavesSeenUnseensHandler(c echo.Context) error {
 
-	leaves, err := app.store.GetAllLeavesRequests(c.Request().Context())
+	leaves, err := app.store.GetAllLeavesUnSeenTopBottomSeen(c.Request().Context())
 
 	if err != nil {
 		slog.Error("Error getting leaves ", "Error", err.Error())
@@ -62,6 +62,21 @@ func (app *application) getAllLeavesRequestsHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, leaves)
 
 }
+
+
+func (app *application) getAllLeavesApprovedHandler(c echo.Context) error {
+
+	leaves, err := app.store.GetAllLeavesApproved(c.Request().Context())
+
+	if err != nil {
+		slog.Error("Error getting leaves ", "Error", err.Error())
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+	}
+
+	return c.JSON(http.StatusOK, leaves)
+
+}
+
 
 func (app *application) getLeavesByEmployeeIdHandler(c echo.Context) error {
 

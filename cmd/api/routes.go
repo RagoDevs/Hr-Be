@@ -39,7 +39,8 @@ func (app *application) routes() *echo.Echo {
 	g.DELETE("/employees/:id", app.deleteEmployeeByIdHandler, app.requireAdminOrHr)
 
 	// leaves
-	g.GET("/leaves/requests", app.getAllLeavesRequestsHandler)
+	g.GET("/leaves", app.getAllLeavesSeenUnseensHandler)
+	g.GET("/leaves/approved", app.getAllLeavesApprovedHandler)
 	g.GET("/leaves/employee/:employee_id", app.getLeavesByEmployeeIdHandler)
 	g.POST("/leaves", app.createLeaveHandler)
 	g.PUT("/leaves/:leave_id", app.updateLeaveByIdHandler)

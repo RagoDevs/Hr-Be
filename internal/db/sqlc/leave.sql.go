@@ -70,7 +70,94 @@ func (q *Queries) DeleteLeave(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
-const getAllLeavesRequests = `-- name: GetAllLeavesRequests :many
+const getAllLeavesApproved = `-- name: GetAllLeavesApproved :many
+SELECT 
+    l.id AS leave_id,
+    e.name AS employee_name,
+    u.email AS employee_email,
+    l.employee_id, 
+    l.approved_by_id ,
+    ep.name AS approved_by_name,
+    up.email AS approved_by_email,
+    l.approved, 
+    l.description, 
+    l.start_date, 
+    l.end_date, 
+    l.leave_count, 
+    l.created_at, 
+    l.seen 
+FROM 
+    leave l
+JOIN 
+    employee e ON e.id = l.employee_id
+JOIN
+    users u ON e.user_id = u.id
+JOIN 
+    employee ep ON l.approved_by_id = ep.id
+JOIN
+    users up ON ep.user_id = up.id
+
+WHERE l.seen = TRUE AND l.approved = TRUE
+
+ORDER BY l.created_at DESC
+`
+
+type GetAllLeavesApprovedRow struct {
+	LeaveID         uuid.UUID `json:"leave_id"`
+	EmployeeName    string    `json:"employee_name"`
+	EmployeeEmail   string    `json:"employee_email"`
+	EmployeeID      uuid.UUID `json:"employee_id"`
+	ApprovedByID    uuid.UUID `json:"approved_by_id"`
+	ApprovedByName  string    `json:"approved_by_name"`
+	ApprovedByEmail string    `json:"approved_by_email"`
+	Approved        bool      `json:"approved"`
+	Description     string    `json:"description"`
+	StartDate       time.Time `json:"start_date"`
+	EndDate         time.Time `json:"end_date"`
+	LeaveCount      int16     `json:"leave_count"`
+	CreatedAt       time.Time `json:"created_at"`
+	Seen            bool      `json:"seen"`
+}
+
+func (q *Queries) GetAllLeavesApproved(ctx context.Context) ([]GetAllLeavesApprovedRow, error) {
+	rows, err := q.db.QueryContext(ctx, getAllLeavesApproved)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAllLeavesApprovedRow{}
+	for rows.Next() {
+		var i GetAllLeavesApprovedRow
+		if err := rows.Scan(
+			&i.LeaveID,
+			&i.EmployeeName,
+			&i.EmployeeEmail,
+			&i.EmployeeID,
+			&i.ApprovedByID,
+			&i.ApprovedByName,
+			&i.ApprovedByEmail,
+			&i.Approved,
+			&i.Description,
+			&i.StartDate,
+			&i.EndDate,
+			&i.LeaveCount,
+			&i.CreatedAt,
+			&i.Seen,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllLeavesUnSeenTopBottomSeen = `-- name: GetAllLeavesUnSeenTopBottomSeen :many
 SELECT 
     l.id AS leave_id,
     e.name AS employee_name,
@@ -99,11 +186,10 @@ JOIN
 
 WHERE l.seen = FALSE
 
-ORDER BY
-    l.created_at DESC
+ORDER BY l.seen ASC, l.created_at DESC
 `
 
-type GetAllLeavesRequestsRow struct {
+type GetAllLeavesUnSeenTopBottomSeenRow struct {
 	LeaveID         uuid.UUID `json:"leave_id"`
 	EmployeeName    string    `json:"employee_name"`
 	EmployeeEmail   string    `json:"employee_email"`
@@ -120,15 +206,15 @@ type GetAllLeavesRequestsRow struct {
 	Seen            bool      `json:"seen"`
 }
 
-func (q *Queries) GetAllLeavesRequests(ctx context.Context) ([]GetAllLeavesRequestsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getAllLeavesRequests)
+func (q *Queries) GetAllLeavesUnSeenTopBottomSeen(ctx context.Context) ([]GetAllLeavesUnSeenTopBottomSeenRow, error) {
+	rows, err := q.db.QueryContext(ctx, getAllLeavesUnSeenTopBottomSeen)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetAllLeavesRequestsRow{}
+	items := []GetAllLeavesUnSeenTopBottomSeenRow{}
 	for rows.Next() {
-		var i GetAllLeavesRequestsRow
+		var i GetAllLeavesUnSeenTopBottomSeenRow
 		if err := rows.Scan(
 			&i.LeaveID,
 			&i.EmployeeName,
