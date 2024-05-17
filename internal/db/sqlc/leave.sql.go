@@ -184,8 +184,6 @@ JOIN
 JOIN
     users up ON ep.user_id = up.id
 
-WHERE l.seen = FALSE
-
 ORDER BY l.seen ASC, l.created_at DESC
 `
 
