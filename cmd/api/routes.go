@@ -41,6 +41,7 @@ func (app *application) routes() *echo.Echo {
 	// leaves
 	g.GET("/leaves", app.getAllLeavesSeenUnseensHandler)
 	g.GET("/leaves/approved", app.getAllLeavesApprovedHandler)
+	g.GET("/leaves/approvers", app.getAllLeaveApprovers)
 	g.GET("/leaves/employee/:employee_id", app.getLeavesByEmployeeIdHandler)
 	g.POST("/leaves", app.createLeaveHandler)
 	g.PUT("/leaves/:leave_id", app.updateLeaveByIdHandler)
@@ -58,6 +59,9 @@ func (app *application) routes() *echo.Echo {
 	g.POST("/announcements", app.createAnnouncementHandler, app.requireAdminOrHr)
 	g.PUT("/announcements/:announcement_id", app.updateAnnouncementByIdHandler, app.requireAdminOrHr)
 	g.DELETE("/announcements/:announcement_id", app.deleteAnnouncementHandler, app.requireAdminOrHr)
+
+
+	//  approvers
 
 	return e
 

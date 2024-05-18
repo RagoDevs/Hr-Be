@@ -23,6 +23,7 @@ type Querier interface {
 	DeleteEmployeeById(ctx context.Context, id uuid.UUID) error
 	DeleteLeave(ctx context.Context, id uuid.UUID) error
 	DeleteUserById(ctx context.Context, id uuid.UUID) error
+	GetAllAApprovers(ctx context.Context) ([]GetAllAApproversRow, error)
 	GetAllEmployees(ctx context.Context) ([]GetAllEmployeesRow, error)
 	GetAllLeavesApproved(ctx context.Context) ([]GetAllLeavesApprovedRow, error)
 	GetAllLeavesUnSeenTopBottomSeen(ctx context.Context) ([]GetAllLeavesUnSeenTopBottomSeenRow, error)

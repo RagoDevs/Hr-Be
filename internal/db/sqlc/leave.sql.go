@@ -70,6 +70,40 @@ func (q *Queries) DeleteLeave(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
+const getAllAApprovers = `-- name: GetAllAApprovers :many
+SELECT id, name FROM employee 
+WHERE 
+job_title = 'hr'
+`
+
+type GetAllAApproversRow struct {
+	ID   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
+}
+
+func (q *Queries) GetAllAApprovers(ctx context.Context) ([]GetAllAApproversRow, error) {
+	rows, err := q.db.QueryContext(ctx, getAllAApprovers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAllAApproversRow{}
+	for rows.Next() {
+		var i GetAllAApproversRow
+		if err := rows.Scan(&i.ID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getAllLeavesApproved = `-- name: GetAllLeavesApproved :many
 SELECT 
     l.id AS leave_id,

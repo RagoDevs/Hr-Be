@@ -63,7 +63,6 @@ func (app *application) getAllLeavesSeenUnseensHandler(c echo.Context) error {
 
 }
 
-
 func (app *application) getAllLeavesApprovedHandler(c echo.Context) error {
 
 	leaves, err := app.store.GetAllLeavesApproved(c.Request().Context())
@@ -76,7 +75,6 @@ func (app *application) getAllLeavesApprovedHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, leaves)
 
 }
-
 
 func (app *application) getLeavesByEmployeeIdHandler(c echo.Context) error {
 
@@ -236,5 +234,18 @@ func (app *application) respondToLeaveByIdHandler(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{"success": "leave responded successful"})
+
+}
+
+func (app *application) getAllLeaveApprovers(c echo.Context) error {
+
+	approvers, err := app.store.GetAllAApprovers(c.Request().Context())
+
+	if err != nil {
+		slog.Error("Error get leaves of employee_id on getAllLeaveApprovers", "Error", err.Error())
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+	}
+
+	return c.JSON(http.StatusOK, approvers)
 
 }

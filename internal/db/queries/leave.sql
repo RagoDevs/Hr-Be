@@ -125,3 +125,8 @@ SET approved = $1,
     seen = TRUE
 WHERE id = $2;
 
+
+-- name: GetAllAApprovers :many
+SELECT id, name FROM employee 
+WHERE 
+job_title = 'hr';
