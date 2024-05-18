@@ -71,9 +71,9 @@ func (q *Queries) DeleteLeave(ctx context.Context, id uuid.UUID) error {
 }
 
 const getAllAApprovers = `-- name: GetAllAApprovers :many
-SELECT id, name FROM employee 
-WHERE 
-job_title = 'hr'
+SELECT id, name 
+FROM employee 
+WHERE LOWER(job_title) = 'hr'
 `
 
 type GetAllAApproversRow struct {

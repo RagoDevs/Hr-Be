@@ -127,6 +127,6 @@ WHERE id = $2;
 
 
 -- name: GetAllAApprovers :many
-SELECT id, name FROM employee 
-WHERE 
-job_title = 'hr';
+SELECT id, name 
+FROM employee 
+WHERE LOWER(job_title) = 'hr';
