@@ -15,16 +15,20 @@ import (
 func (app *application) createLeaveHandler(c echo.Context) error {
 
 	var input struct {
-		EmployeeID   uuid.UUID `json:"employee_id"`
-		ApprovedByID uuid.UUID `json:"approved_by_id"`
-		LeaveType    string    `json:"leave_type"`
-		Description  string    `json:"description"`
-		StartDate    time.Time `json:"start_date"`
-		EndDate      time.Time `json:"end_date"`
+		EmployeeID   uuid.UUID `json:"employee_id" validate:"required"`
+		ApprovedByID uuid.UUID `json:"approved_by_id" validate:"required"`
+		LeaveType    string    `json:"leave_type" validate:"required"`
+		Description  string    `json:"description" validate:"required"`
+		StartDate    time.Time `json:"start_date" validate:"required"`
+		EndDate      time.Time `json:"end_date" validate:"required"`
 	}
 
 	if err := c.Bind(&input); err != nil {
 		return err
+	}
+
+	if err := app.validator.Struct(input); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
 	duration := input.EndDate.Sub(input.StartDate)
