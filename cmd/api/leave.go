@@ -17,6 +17,7 @@ func (app *application) createLeaveHandler(c echo.Context) error {
 	var input struct {
 		EmployeeID   uuid.UUID `json:"employee_id"`
 		ApprovedByID uuid.UUID `json:"approved_by_id"`
+		LeaveType    string    `json:"leave_type"`
 		Description  string    `json:"description"`
 		StartDate    time.Time `json:"start_date"`
 		EndDate      time.Time `json:"end_date"`
@@ -33,6 +34,7 @@ func (app *application) createLeaveHandler(c echo.Context) error {
 	args := db.CreateLeaveParams{
 		EmployeeID:   input.EmployeeID,
 		ApprovedByID: input.ApprovedByID,
+		LeaveType:    input.LeaveType,
 		Description:  input.Description,
 		StartDate:    input.StartDate,
 		EndDate:      input.EndDate,
@@ -106,6 +108,7 @@ func (app *application) updateLeaveByIdHandler(c echo.Context) error {
 	var input struct {
 		ApprovedByID *uuid.UUID `json:"approved_by_id"`
 		Approved     *bool      `json:"approved"`
+		LeaveType    *string    `json:"leave_type"`
 		Description  *string    `json:"description"`
 		StartDate    *time.Time `json:"start_date"`
 		EndDate      *time.Time `json:"end_date"`
@@ -135,6 +138,10 @@ func (app *application) updateLeaveByIdHandler(c echo.Context) error {
 
 	if input.Approved != nil {
 		leave.Approved = *input.Approved
+	}
+
+	if input.LeaveType != nil {
+		leave.LeaveType = *input.LeaveType
 	}
 
 	if input.Description != nil {

@@ -50,6 +50,7 @@ type Leave struct {
 	EmployeeID   uuid.UUID `json:"employee_id"`
 	ApprovedByID uuid.UUID `json:"approved_by_id"`
 	Approved     bool      `json:"approved"`
+	LeaveType    string    `json:"leave_type"`
 	Description  string    `json:"description"`
 	StartDate    time.Time `json:"start_date"`
 	EndDate      time.Time `json:"end_date"`

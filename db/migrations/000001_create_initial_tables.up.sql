@@ -93,6 +93,7 @@ CREATE TABLE  IF NOT EXISTS  leave (
     employee_id UUID NOT NULL REFERENCES employee(id) ON DELETE CASCADE,
     approved_by_id UUID NOT NULL REFERENCES employee(id) ON DELETE CASCADE,
     approved BOOLEAN NOT NULL DEFAULT FALSE,
+    leave_type TEXT NOT NULL DEFAULT 'annual_leave',
     description TEXT NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,

@@ -2,11 +2,12 @@
 INSERT INTO leave (
     employee_id, 
     approved_by_id,
+    leave_type,
     description,
     start_date,
     end_date,
     leave_count)
-	VALUES ($1, $2, $3, $4, $5, $6);
+	VALUES ($1, $2, $3, $4, $5, $6, $7);
 
 
 -- name: GetLeaveById :one
@@ -17,12 +18,13 @@ SELECT * FROM  leave WHERE leave.id = $1;
 UPDATE leave
 SET approved_by_id = $1,
     approved = $2,
-    description= $3,
-    start_date = $4,
-    end_date = $5,
-    leave_count = $6,
-    seen = $7
-WHERE id = $8;
+    leave_type = $3,
+    description= $4,
+    start_date = $5,
+    end_date = $6,
+    leave_count = $7,
+    seen = $8
+WHERE id = $9;
 
 
 -- name: DeleteLeave :exec
@@ -39,7 +41,8 @@ SELECT
     l.approved_by_id ,
     ep.name AS approved_by_name,
     up.email AS approved_by_email,
-    l.approved, 
+    l.approved,
+    l.leave_type,
     l.description, 
     l.start_date, 
     l.end_date, 
@@ -71,6 +74,7 @@ SELECT
     ep.name AS approved_by_name,
     up.email AS approved_by_email,
     l.approved, 
+    l.leave_type,
     l.description, 
     l.start_date, 
     l.end_date, 
@@ -99,7 +103,8 @@ SELECT
     e.name AS approved_by_name,
     e.department,
     u.email AS approved_by_email,
-    l.approved, 
+    l.approved,
+    l.leave_type,
     l.description, 
     l.start_date, 
     l.end_date, 

@@ -33,16 +33,18 @@ const createLeave = `-- name: CreateLeave :exec
 INSERT INTO leave (
     employee_id, 
     approved_by_id,
+    leave_type,
     description,
     start_date,
     end_date,
     leave_count)
-	VALUES ($1, $2, $3, $4, $5, $6)
+	VALUES ($1, $2, $3, $4, $5, $6, $7)
 `
 
 type CreateLeaveParams struct {
 	EmployeeID   uuid.UUID `json:"employee_id"`
 	ApprovedByID uuid.UUID `json:"approved_by_id"`
+	LeaveType    string    `json:"leave_type"`
 	Description  string    `json:"description"`
 	StartDate    time.Time `json:"start_date"`
 	EndDate      time.Time `json:"end_date"`
@@ -53,6 +55,7 @@ func (q *Queries) CreateLeave(ctx context.Context, arg CreateLeaveParams) error 
 	_, err := q.db.ExecContext(ctx, createLeave,
 		arg.EmployeeID,
 		arg.ApprovedByID,
+		arg.LeaveType,
 		arg.Description,
 		arg.StartDate,
 		arg.EndDate,
@@ -115,6 +118,7 @@ SELECT
     ep.name AS approved_by_name,
     up.email AS approved_by_email,
     l.approved, 
+    l.leave_type,
     l.description, 
     l.start_date, 
     l.end_date, 
@@ -147,6 +151,7 @@ type GetAllLeavesApprovedRow struct {
 	ApprovedByName  string    `json:"approved_by_name"`
 	ApprovedByEmail string    `json:"approved_by_email"`
 	Approved        bool      `json:"approved"`
+	LeaveType       string    `json:"leave_type"`
 	Description     string    `json:"description"`
 	StartDate       time.Time `json:"start_date"`
 	EndDate         time.Time `json:"end_date"`
@@ -174,6 +179,7 @@ func (q *Queries) GetAllLeavesApproved(ctx context.Context) ([]GetAllLeavesAppro
 			&i.ApprovedByName,
 			&i.ApprovedByEmail,
 			&i.Approved,
+			&i.LeaveType,
 			&i.Description,
 			&i.StartDate,
 			&i.EndDate,
@@ -204,7 +210,8 @@ SELECT
     l.approved_by_id ,
     ep.name AS approved_by_name,
     up.email AS approved_by_email,
-    l.approved, 
+    l.approved,
+    l.leave_type,
     l.description, 
     l.start_date, 
     l.end_date, 
@@ -235,6 +242,7 @@ type GetAllLeavesUnSeenTopBottomSeenRow struct {
 	ApprovedByName  string    `json:"approved_by_name"`
 	ApprovedByEmail string    `json:"approved_by_email"`
 	Approved        bool      `json:"approved"`
+	LeaveType       string    `json:"leave_type"`
 	Description     string    `json:"description"`
 	StartDate       time.Time `json:"start_date"`
 	EndDate         time.Time `json:"end_date"`
@@ -262,6 +270,7 @@ func (q *Queries) GetAllLeavesUnSeenTopBottomSeen(ctx context.Context) ([]GetAll
 			&i.ApprovedByName,
 			&i.ApprovedByEmail,
 			&i.Approved,
+			&i.LeaveType,
 			&i.Description,
 			&i.StartDate,
 			&i.EndDate,
@@ -283,7 +292,7 @@ func (q *Queries) GetAllLeavesUnSeenTopBottomSeen(ctx context.Context) ([]GetAll
 }
 
 const getLeaveById = `-- name: GetLeaveById :one
-SELECT id, employee_id, approved_by_id, approved, description, start_date, end_date, leave_count, created_at, seen FROM  leave WHERE leave.id = $1
+SELECT id, employee_id, approved_by_id, approved, leave_type, description, start_date, end_date, leave_count, created_at, seen FROM  leave WHERE leave.id = $1
 `
 
 func (q *Queries) GetLeaveById(ctx context.Context, id uuid.UUID) (Leave, error) {
@@ -294,6 +303,7 @@ func (q *Queries) GetLeaveById(ctx context.Context, id uuid.UUID) (Leave, error)
 		&i.EmployeeID,
 		&i.ApprovedByID,
 		&i.Approved,
+		&i.LeaveType,
 		&i.Description,
 		&i.StartDate,
 		&i.EndDate,
@@ -310,7 +320,8 @@ SELECT
     e.name AS approved_by_name,
     e.department,
     u.email AS approved_by_email,
-    l.approved, 
+    l.approved,
+    l.leave_type,
     l.description, 
     l.start_date, 
     l.end_date, 
@@ -336,6 +347,7 @@ type GetLeavesByEmployeeIdRow struct {
 	Department      string    `json:"department"`
 	ApprovedByEmail string    `json:"approved_by_email"`
 	Approved        bool      `json:"approved"`
+	LeaveType       string    `json:"leave_type"`
 	Description     string    `json:"description"`
 	StartDate       time.Time `json:"start_date"`
 	EndDate         time.Time `json:"end_date"`
@@ -359,6 +371,7 @@ func (q *Queries) GetLeavesByEmployeeId(ctx context.Context, employeeID uuid.UUI
 			&i.Department,
 			&i.ApprovedByEmail,
 			&i.Approved,
+			&i.LeaveType,
 			&i.Description,
 			&i.StartDate,
 			&i.EndDate,
@@ -383,17 +396,19 @@ const updateLeave = `-- name: UpdateLeave :exec
 UPDATE leave
 SET approved_by_id = $1,
     approved = $2,
-    description= $3,
-    start_date = $4,
-    end_date = $5,
-    leave_count = $6,
-    seen = $7
-WHERE id = $8
+    leave_type = $3,
+    description= $4,
+    start_date = $5,
+    end_date = $6,
+    leave_count = $7,
+    seen = $8
+WHERE id = $9
 `
 
 type UpdateLeaveParams struct {
 	ApprovedByID uuid.UUID `json:"approved_by_id"`
 	Approved     bool      `json:"approved"`
+	LeaveType    string    `json:"leave_type"`
 	Description  string    `json:"description"`
 	StartDate    time.Time `json:"start_date"`
 	EndDate      time.Time `json:"end_date"`
@@ -406,6 +421,7 @@ func (q *Queries) UpdateLeave(ctx context.Context, arg UpdateLeaveParams) error 
 	_, err := q.db.ExecContext(ctx, updateLeave,
 		arg.ApprovedByID,
 		arg.Approved,
+		arg.LeaveType,
 		arg.Description,
 		arg.StartDate,
 		arg.EndDate,
