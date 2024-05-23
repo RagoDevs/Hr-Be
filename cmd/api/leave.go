@@ -12,6 +12,13 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type LeaveDistribution struct {
+	Sick     int64 `json:"sick"`
+	Personal int64 `json:"personal"`
+	Paid     int64 `json:"paid"`
+	Annual   int64 `json:"annual"`
+}
+
 func (app *application) createLeaveHandler(c echo.Context) error {
 
 	var input struct {
@@ -296,7 +303,20 @@ func (app *application) getLeaveCountDistr(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
 	}
 
-	return c.JSON(http.StatusOK, leaves)
+	var ld LeaveDistribution
+
+	for _, leave := range leaves {
+		if leave.LeaveType == "sick" {
+			ld.Sick = leave.LeaveCount
+		} else if leave.LeaveType == "paid" {
+			ld.Paid = leave.LeaveCount
+		} else if leave.LeaveType == "personal" {
+			ld.Personal = leave.LeaveCount
+		} else if leave.LeaveType == "annual" {
+			ld.Annual = leave.LeaveCount
+		}
+
+	}
+	return c.JSON(http.StatusOK, ld)
 
 }
-
