@@ -155,7 +155,7 @@ WHERE
     l.approved = TRUE;
 
 
--- name: GetEmployeesOnLeaveInthreedays :many
+-- name: GetEmployeesOnLeaveUpcoming :many
 SELECT
     e.id AS employee_id,
     e.name AS employee_name, 

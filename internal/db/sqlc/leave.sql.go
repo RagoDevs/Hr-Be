@@ -348,7 +348,7 @@ func (q *Queries) GetEmployeesOnLeave(ctx context.Context) ([]GetEmployeesOnLeav
 	return items, nil
 }
 
-const getEmployeesOnLeaveInthreedays = `-- name: GetEmployeesOnLeaveInthreedays :many
+const getEmployeesOnLeaveUpcoming = `-- name: GetEmployeesOnLeaveUpcoming :many
 SELECT
     e.id AS employee_id,
     e.name AS employee_name, 
@@ -369,7 +369,7 @@ WHERE
     l.approved = TRUE
 `
 
-type GetEmployeesOnLeaveInthreedaysRow struct {
+type GetEmployeesOnLeaveUpcomingRow struct {
 	EmployeeID   uuid.UUID `json:"employee_id"`
 	EmployeeName string    `json:"employee_name"`
 	LeaveType    string    `json:"leave_type"`
@@ -381,15 +381,15 @@ type GetEmployeesOnLeaveInthreedaysRow struct {
 	Seen         bool      `json:"seen"`
 }
 
-func (q *Queries) GetEmployeesOnLeaveInthreedays(ctx context.Context) ([]GetEmployeesOnLeaveInthreedaysRow, error) {
-	rows, err := q.db.QueryContext(ctx, getEmployeesOnLeaveInthreedays)
+func (q *Queries) GetEmployeesOnLeaveUpcoming(ctx context.Context) ([]GetEmployeesOnLeaveUpcomingRow, error) {
+	rows, err := q.db.QueryContext(ctx, getEmployeesOnLeaveUpcoming)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetEmployeesOnLeaveInthreedaysRow{}
+	items := []GetEmployeesOnLeaveUpcomingRow{}
 	for rows.Next() {
-		var i GetEmployeesOnLeaveInthreedaysRow
+		var i GetEmployeesOnLeaveUpcomingRow
 		if err := rows.Scan(
 			&i.EmployeeID,
 			&i.EmployeeName,
