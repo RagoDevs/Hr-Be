@@ -34,6 +34,7 @@ type Querier interface {
 	GetEmployeeById(ctx context.Context, id uuid.UUID) (Employee, error)
 	GetEmployeeByIdDetailed(ctx context.Context, id uuid.UUID) (GetEmployeeByIdDetailedRow, error)
 	GetEmployeesOnLeave(ctx context.Context) ([]GetEmployeesOnLeaveRow, error)
+	GetEmployeesOnLeaveInthreedays(ctx context.Context) ([]GetEmployeesOnLeaveInthreedaysRow, error)
 	GetLeaveById(ctx context.Context, id uuid.UUID) (Leave, error)
 	GetLeavesByEmployeeId(ctx context.Context, employeeID uuid.UUID) ([]GetLeavesByEmployeeIdRow, error)
 	GetRoleByName(ctx context.Context, name string) (uuid.UUID, error)

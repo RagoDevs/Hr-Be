@@ -153,3 +153,24 @@ WHERE
     l.start_date <= CURRENT_DATE AND
     l.end_date >= CURRENT_DATE AND
     l.approved = TRUE;
+
+
+-- name: GetEmployeesOnLeaveInthreedays :many
+SELECT
+    e.id AS employee_id,
+    e.name AS employee_name, 
+    l.leave_type,
+    l.description,
+    l.start_date,
+    l.end_date,
+    l.leave_count,
+    l.approved,
+    l.seen
+FROM
+    leave l
+JOIN
+    employee e ON l.employee_id = e.id
+WHERE
+    l.start_date >= CURRENT_DATE + INTERVAL '1 day' AND
+    l.start_date < CURRENT_DATE + INTERVAL '4 days' AND
+    l.approved = TRUE;

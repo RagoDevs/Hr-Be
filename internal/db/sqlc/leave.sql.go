@@ -348,6 +348,72 @@ func (q *Queries) GetEmployeesOnLeave(ctx context.Context) ([]GetEmployeesOnLeav
 	return items, nil
 }
 
+const getEmployeesOnLeaveInthreedays = `-- name: GetEmployeesOnLeaveInthreedays :many
+SELECT
+    e.id AS employee_id,
+    e.name AS employee_name, 
+    l.leave_type,
+    l.description,
+    l.start_date,
+    l.end_date,
+    l.leave_count,
+    l.approved,
+    l.seen
+FROM
+    leave l
+JOIN
+    employee e ON l.employee_id = e.id
+WHERE
+    l.start_date >= CURRENT_DATE + INTERVAL '1 day' AND
+    l.start_date < CURRENT_DATE + INTERVAL '4 days' AND
+    l.approved = TRUE
+`
+
+type GetEmployeesOnLeaveInthreedaysRow struct {
+	EmployeeID   uuid.UUID `json:"employee_id"`
+	EmployeeName string    `json:"employee_name"`
+	LeaveType    string    `json:"leave_type"`
+	Description  string    `json:"description"`
+	StartDate    time.Time `json:"start_date"`
+	EndDate      time.Time `json:"end_date"`
+	LeaveCount   int16     `json:"leave_count"`
+	Approved     bool      `json:"approved"`
+	Seen         bool      `json:"seen"`
+}
+
+func (q *Queries) GetEmployeesOnLeaveInthreedays(ctx context.Context) ([]GetEmployeesOnLeaveInthreedaysRow, error) {
+	rows, err := q.db.QueryContext(ctx, getEmployeesOnLeaveInthreedays)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetEmployeesOnLeaveInthreedaysRow{}
+	for rows.Next() {
+		var i GetEmployeesOnLeaveInthreedaysRow
+		if err := rows.Scan(
+			&i.EmployeeID,
+			&i.EmployeeName,
+			&i.LeaveType,
+			&i.Description,
+			&i.StartDate,
+			&i.EndDate,
+			&i.LeaveCount,
+			&i.Approved,
+			&i.Seen,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getLeaveById = `-- name: GetLeaveById :one
 SELECT id, employee_id, approved_by_id, approved, leave_type, description, start_date, end_date, leave_count, created_at, seen FROM  leave WHERE leave.id = $1
 `
