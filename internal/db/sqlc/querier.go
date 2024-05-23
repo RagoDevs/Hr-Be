@@ -36,6 +36,7 @@ type Querier interface {
 	GetEmployeesOnLeave(ctx context.Context) ([]GetEmployeesOnLeaveRow, error)
 	GetEmployeesOnLeaveUpcoming(ctx context.Context) ([]GetEmployeesOnLeaveUpcomingRow, error)
 	GetLeaveById(ctx context.Context, id uuid.UUID) (Leave, error)
+	GetLeaveCountDistr(ctx context.Context) ([]GetLeaveCountDistrRow, error)
 	GetLeavesByEmployeeId(ctx context.Context, employeeID uuid.UUID) ([]GetLeavesByEmployeeIdRow, error)
 	GetRoleByName(ctx context.Context, name string) (uuid.UUID, error)
 	GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error)

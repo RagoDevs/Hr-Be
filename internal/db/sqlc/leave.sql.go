@@ -437,6 +437,46 @@ func (q *Queries) GetLeaveById(ctx context.Context, id uuid.UUID) (Leave, error)
 	return i, err
 }
 
+const getLeaveCountDistr = `-- name: GetLeaveCountDistr :many
+SELECT
+    l.leave_type,
+    COUNT(*) AS leave_count
+FROM
+    leave l
+GROUP BY
+    l.leave_type
+ORDER BY
+    l.leave_type
+`
+
+type GetLeaveCountDistrRow struct {
+	LeaveType  string `json:"leave_type"`
+	LeaveCount int64  `json:"leave_count"`
+}
+
+func (q *Queries) GetLeaveCountDistr(ctx context.Context) ([]GetLeaveCountDistrRow, error) {
+	rows, err := q.db.QueryContext(ctx, getLeaveCountDistr)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetLeaveCountDistrRow{}
+	for rows.Next() {
+		var i GetLeaveCountDistrRow
+		if err := rows.Scan(&i.LeaveType, &i.LeaveCount); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getLeavesByEmployeeId = `-- name: GetLeavesByEmployeeId :many
 SELECT 
     l.id AS leave_id,

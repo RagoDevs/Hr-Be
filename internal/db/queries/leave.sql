@@ -174,3 +174,16 @@ WHERE
     l.start_date >= CURRENT_DATE + INTERVAL '1 day' AND
     l.start_date < CURRENT_DATE + INTERVAL '4 days' AND
     l.approved = TRUE;
+
+
+
+-- name: GetLeaveCountDistr :many
+SELECT
+    l.leave_type,
+    COUNT(*) AS leave_count
+FROM
+    leave l
+GROUP BY
+    l.leave_type
+ORDER BY
+    l.leave_type;
