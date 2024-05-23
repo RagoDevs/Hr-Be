@@ -16,7 +16,7 @@ func (app *application) createContractHandler(c echo.Context) error {
 
 	var input struct {
 		EmployeeID   uuid.UUID `json:"employee_id" validate:"required"`
-		ContractType string    `json:"contract_type" validate:"oneof=temporary permanent"`
+		ContractType string    `json:"contract_type" validate:"oneof=temporary permanent internship"`
 		StartDate    time.Time `json:"start_date" validate:"required"`
 		EndDate      time.Time `json:"end_date" validate:"required"`
 		Attachment   string    `json:"attachment" validate:"required"`
