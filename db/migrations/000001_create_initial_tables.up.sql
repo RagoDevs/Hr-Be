@@ -79,7 +79,7 @@ VALUES (
 CREATE TABLE  IF NOT EXISTS  contract (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     employee_id UUID NOT NULL REFERENCES employee(id) ON DELETE CASCADE,
-    contract_type TEXT NOT NULL,
+    contract_type TEXT NOT NULL DEFAULT 'permanent',
     period INTEGER NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
