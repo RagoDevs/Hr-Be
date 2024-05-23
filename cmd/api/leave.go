@@ -260,3 +260,29 @@ func (app *application) getAllLeaveApprovers(c echo.Context) error {
 	return c.JSON(http.StatusOK, approvers)
 
 }
+
+func (app *application) getAllLeaveOnleave(c echo.Context) error {
+
+	leaves, err := app.store.GetEmployeesOnLeave(c.Request().Context())
+
+	if err != nil {
+		slog.Error("Error getting onleave employees", "Error", err.Error())
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+	}
+
+	return c.JSON(http.StatusOK, leaves)
+
+}
+
+func (app *application) getAllLeaveUpcoming(c echo.Context) error {
+
+	leaves, err := app.store.GetEmployeesOnLeaveUpcoming(c.Request().Context())
+
+	if err != nil {
+		slog.Error("Error getting upcoming leaves employees", "Error", err.Error())
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+	}
+
+	return c.JSON(http.StatusOK, leaves)
+
+}
