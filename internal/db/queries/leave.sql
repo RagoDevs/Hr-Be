@@ -183,6 +183,9 @@ SELECT
     COUNT(*) AS leave_count
 FROM
     leave l
+
+WHERE l.approved = TRUE
+
 GROUP BY
     l.leave_type
 ORDER BY
