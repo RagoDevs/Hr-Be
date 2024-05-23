@@ -16,7 +16,7 @@ func (app *application) createContractHandler(c echo.Context) error {
 
 	var input struct {
 		EmployeeID   uuid.UUID `json:"employee_id" validate:"required"`
-		ContractType string    `json:"contract_type" validate:"required"`
+		ContractType string    `json:"contract_type" validate:"oneof=temporary permanent"`
 		StartDate    time.Time `json:"start_date" validate:"required"`
 		EndDate      time.Time `json:"end_date" validate:"required"`
 		Attachment   string    `json:"attachment" validate:"required"`
@@ -29,7 +29,7 @@ func (app *application) createContractHandler(c echo.Context) error {
 	if err := app.validator.Struct(input); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
-	
+
 	period := input.EndDate.Sub(input.StartDate).Hours() / 24
 
 	args := db.CreateContractParams{

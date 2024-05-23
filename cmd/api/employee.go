@@ -19,11 +19,11 @@ func (app *application) createEmployeeHandler(c echo.Context) error {
 		Name        string    `json:"name" validate:"required"`
 		Email       string    `json:"email" validate:"required,email"`
 		Password    string    `json:"password" validate:"required,min=6"`
-		Role        string    `json:"role" validate:"required"`
+		Role        string    `json:"role" validate:"oneof=hr staff admin"`
 		DoB         time.Time `json:"dob" validate:"required"`
 		Avatar      string    `json:"avatar"`
 		Phone       string    `json:"phone" validate:"required"`
-		Gender      string    `json:"gender" validate:"required"`
+		Gender      string    `json:"gender" validate:"oneof=male female"`
 		JobTitle    string    `json:"job_title" validate:"required"`
 		Department  string    `json:"department" validate:"required"`
 		Address     string    `json:"address" validate:"required"`
@@ -95,6 +95,7 @@ func (app *application) updateEmployeeByIdHandler(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid uuid"})
 	}
 
+	
 	var input struct {
 		Name        *string    `json:"name"`
 		Email       *string    `json:"email"`

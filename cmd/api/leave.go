@@ -24,7 +24,7 @@ func (app *application) createLeaveHandler(c echo.Context) error {
 	var input struct {
 		EmployeeID   uuid.UUID `json:"employee_id" validate:"required"`
 		ApprovedByID uuid.UUID `json:"approved_by_id" validate:"required"`
-		LeaveType    string    `json:"leave_type" validate:"required"`
+		LeaveType    string    `json:"leave_type" validate:"oneof=paid sick annual personal"`
 		Description  string    `json:"description" validate:"required"`
 		StartDate    time.Time `json:"start_date" validate:"required"`
 		EndDate      time.Time `json:"end_date" validate:"required"`
