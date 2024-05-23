@@ -291,6 +291,63 @@ func (q *Queries) GetAllLeavesUnSeenTopBottomSeen(ctx context.Context) ([]GetAll
 	return items, nil
 }
 
+const getEmployeesOnLeave = `-- name: GetEmployeesOnLeave :many
+SELECT
+    e.id AS employee_id,
+    e.name AS employee_name, 
+    l.leave_type,
+    l.description,
+    l.start_date,
+    l.end_date
+FROM
+    leave l
+JOIN
+    employee e ON l.employee_id = e.id
+WHERE
+    l.start_date <= CURRENT_DATE AND
+    l.end_date >= CURRENT_DATE AND
+    l.approved = TRUE
+`
+
+type GetEmployeesOnLeaveRow struct {
+	EmployeeID   uuid.UUID `json:"employee_id"`
+	EmployeeName string    `json:"employee_name"`
+	LeaveType    string    `json:"leave_type"`
+	Description  string    `json:"description"`
+	StartDate    time.Time `json:"start_date"`
+	EndDate      time.Time `json:"end_date"`
+}
+
+func (q *Queries) GetEmployeesOnLeave(ctx context.Context) ([]GetEmployeesOnLeaveRow, error) {
+	rows, err := q.db.QueryContext(ctx, getEmployeesOnLeave)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetEmployeesOnLeaveRow{}
+	for rows.Next() {
+		var i GetEmployeesOnLeaveRow
+		if err := rows.Scan(
+			&i.EmployeeID,
+			&i.EmployeeName,
+			&i.LeaveType,
+			&i.Description,
+			&i.StartDate,
+			&i.EndDate,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getLeaveById = `-- name: GetLeaveById :one
 SELECT id, employee_id, approved_by_id, approved, leave_type, description, start_date, end_date, leave_count, created_at, seen FROM  leave WHERE leave.id = $1
 `

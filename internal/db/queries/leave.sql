@@ -135,3 +135,21 @@ WHERE id = $2;
 SELECT id, name 
 FROM employee 
 WHERE LOWER(job_title) = 'hr';
+
+
+-- name: GetEmployeesOnLeave :many
+SELECT
+    e.id AS employee_id,
+    e.name AS employee_name, 
+    l.leave_type,
+    l.description,
+    l.start_date,
+    l.end_date
+FROM
+    leave l
+JOIN
+    employee e ON l.employee_id = e.id
+WHERE
+    l.start_date <= CURRENT_DATE AND
+    l.end_date >= CURRENT_DATE AND
+    l.approved = TRUE;
