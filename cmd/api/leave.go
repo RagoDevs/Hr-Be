@@ -286,3 +286,17 @@ func (app *application) getAllLeaveUpcoming(c echo.Context) error {
 	return c.JSON(http.StatusOK, leaves)
 
 }
+
+func (app *application) getLeaveCountDistr(c echo.Context) error {
+
+	leaves, err := app.store.GetLeaveCountDistr(c.Request().Context())
+
+	if err != nil {
+		slog.Error("Error getting  leaves counts distribution  of employees", "Error", err.Error())
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+	}
+
+	return c.JSON(http.StatusOK, leaves)
+
+}
+

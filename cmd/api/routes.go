@@ -44,6 +44,7 @@ func (app *application) routes() *echo.Echo {
 	g.GET("/leaves/approvers", app.getAllLeaveApprovers)
 	g.GET("/leaves/onleave", app.getAllLeaveOnleave)
 	g.GET("/leaves/upcoming", app.getAllLeaveUpcoming)
+	g.GET("/leaves/counts", app.getLeaveCountDistr)
 	g.GET("/leaves/employee/:employee_id", app.getLeavesByEmployeeIdHandler)
 	g.POST("/leaves", app.createLeaveHandler)
 	g.PUT("/leaves/:leave_id", app.updateLeaveByIdHandler)
