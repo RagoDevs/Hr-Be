@@ -6,6 +6,7 @@ package db
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -28,7 +29,7 @@ type Querier interface {
 	GetAllLeavesApproved(ctx context.Context) ([]GetAllLeavesApprovedRow, error)
 	GetAllLeavesUnSeenTopBottomSeen(ctx context.Context) ([]GetAllLeavesUnSeenTopBottomSeenRow, error)
 	GetAnnouncementById(ctx context.Context, id uuid.UUID) (Announcement, error)
-	GetAnnouncements(ctx context.Context) ([]GetAnnouncementsRow, error)
+	GetAnnouncementsFromDate(ctx context.Context, announcementDate time.Time) ([]GetAnnouncementsFromDateRow, error)
 	GetContractById(ctx context.Context, id uuid.UUID) (Contract, error)
 	GetContractsOfEmployeeByEmployeeId(ctx context.Context, id uuid.UUID) ([]GetContractsOfEmployeeByEmployeeIdRow, error)
 	GetEmployeeById(ctx context.Context, id uuid.UUID) (Employee, error)

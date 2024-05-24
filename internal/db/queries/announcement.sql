@@ -13,7 +13,7 @@ FROM  announcement
 WHERE id = $1;
 
 
--- name: GetAnnouncements :many
+-- name: GetAnnouncementsFromDate :many
 SELECT 
     a.id, 
     a.description, 
@@ -21,10 +21,12 @@ SELECT
     e.name AS created_by,
     a.created_at 
 
-FROM  announcement a  
+FROM announcement a  
 JOIN employee e ON e.id = a.created_by
+WHERE a.announcement_date >= $1 AND a.announcement_date < $1 + INTERVAL '3 days'
 ORDER BY 
    a.created_at DESC;
+
 
 
 -- name: UpdateAnnouncement :exec

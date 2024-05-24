@@ -60,7 +60,7 @@ func (q *Queries) GetAnnouncementById(ctx context.Context, id uuid.UUID) (Announ
 	return i, err
 }
 
-const getAnnouncements = `-- name: GetAnnouncements :many
+const getAnnouncementsFromDate = `-- name: GetAnnouncementsFromDate :many
 SELECT 
     a.id, 
     a.description, 
@@ -68,13 +68,14 @@ SELECT
     e.name AS created_by,
     a.created_at 
 
-FROM  announcement a  
+FROM announcement a  
 JOIN employee e ON e.id = a.created_by
+WHERE a.announcement_date >= $1 AND a.announcement_date < $1 + INTERVAL '3 days'
 ORDER BY 
    a.created_at DESC
 `
 
-type GetAnnouncementsRow struct {
+type GetAnnouncementsFromDateRow struct {
 	ID               uuid.UUID `json:"id"`
 	Description      string    `json:"description"`
 	AnnouncementDate time.Time `json:"announcement_date"`
@@ -82,15 +83,15 @@ type GetAnnouncementsRow struct {
 	CreatedAt        time.Time `json:"created_at"`
 }
 
-func (q *Queries) GetAnnouncements(ctx context.Context) ([]GetAnnouncementsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getAnnouncements)
+func (q *Queries) GetAnnouncementsFromDate(ctx context.Context, announcementDate time.Time) ([]GetAnnouncementsFromDateRow, error) {
+	rows, err := q.db.QueryContext(ctx, getAnnouncementsFromDate, announcementDate)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetAnnouncementsRow{}
+	items := []GetAnnouncementsFromDateRow{}
 	for rows.Next() {
-		var i GetAnnouncementsRow
+		var i GetAnnouncementsFromDateRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Description,
