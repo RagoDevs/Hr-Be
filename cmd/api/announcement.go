@@ -47,6 +47,16 @@ func (app *application) createAnnouncementHandler(c echo.Context) error {
 
 func (app *application) getAllAnnouncementsHandler(c echo.Context) error {
 
+	date := c.Param("date")
+
+	parsed_time, err := time.Parse(time.RFC3339, date)
+	if err != nil {
+		slog.Error("Error parsing date", "Error", err.Error())
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+	}
+
+	slog.Info("Huraay am the date", "parsed", parsed_time.GoString())
+
 	announcements, err := app.store.GetAnnouncements(c.Request().Context())
 
 	if err != nil {
