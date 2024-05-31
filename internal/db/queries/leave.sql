@@ -184,7 +184,10 @@ SELECT
 FROM
     leave l
 
-WHERE l.approved = TRUE
+WHERE 
+l.start_date <= CURRENT_DATE AND
+l.end_date >= CURRENT_DATE AND
+l.approved = TRUE
 
 GROUP BY
     l.leave_type
