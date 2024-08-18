@@ -19,6 +19,15 @@ type application struct {
 	validator *validator.Validate
 }
 
+func init() {
+
+	var programLevel = new(slog.LevelVar)
+
+	h := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: programLevel})
+	slog.SetDefault(slog.New(h))
+
+}
+
 const version = "1.0.0"
 
 func main() {
