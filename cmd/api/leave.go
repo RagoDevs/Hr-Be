@@ -179,6 +179,7 @@ func (app *application) updateLeaveByIdHandler(c echo.Context) error {
 		Description:  leave.Description,
 		StartDate:    leave.StartDate,
 		EndDate:      leave.EndDate,
+		LeaveType:    leave.LeaveType,
 		LeaveCount:   leave.LeaveCount,
 		Seen:         leave.Seen,
 		ID:           leave_id,
