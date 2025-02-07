@@ -119,7 +119,6 @@ SELECT
     payroll.is_active AS payroll_is_active,
     payroll.created_at AS payroll_created_at,
     payroll.updated_at AS payroll_updated_at,
-    employee.id AS employee_id,
     employee.user_id,
     employee.name AS employee_name,
     employee.dob,
@@ -148,7 +147,6 @@ type GetPayrollRow struct {
 	PayrollIsActive     bool      `json:"payroll_is_active"`
 	PayrollCreatedAt    time.Time `json:"payroll_created_at"`
 	PayrollUpdatedAt    time.Time `json:"payroll_updated_at"`
-	EmployeeID_2        uuid.UUID `json:"employee_id_2"`
 	UserID              uuid.UUID `json:"user_id"`
 	EmployeeName        string    `json:"employee_name"`
 	Dob                 time.Time `json:"dob"`
@@ -176,7 +174,6 @@ func (q *Queries) GetPayroll(ctx context.Context, id uuid.UUID) (GetPayrollRow, 
 		&i.PayrollIsActive,
 		&i.PayrollCreatedAt,
 		&i.PayrollUpdatedAt,
-		&i.EmployeeID_2,
 		&i.UserID,
 		&i.EmployeeName,
 		&i.Dob,
