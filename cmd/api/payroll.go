@@ -4,11 +4,50 @@ import (
 	"log/slog"
 	"net/http"
 	"strconv"
+	"time"
 
 	db "github.com/Hopertz/Hr-Be/internal/db/sqlc"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
+
+type EmployeePayroll struct {
+	ID              uuid.UUID `json:"id"`
+	EmployeeID      uuid.UUID `json:"employee_id"`
+	BasicSalary     float64   `json:"basic_salary"`
+	Tin             string    `json:"tin"`
+	BankName        string    `json:"bank_name"`
+	BankAccount     string    `json:"bank_account"`
+	IsActive        bool      `json:"is_active"`
+	CreatedAt       time.Time `json:"created_at"`
+	UpdatedAt       time.Time `json:"updated_at"`
+	EmployeeName    string    `json:"employee_name"`
+	TaxableIncome   float64   `json:"taxable_income"`
+	PAYE            float64   `json:"paye"`
+	Loan            float64   `json:"loan"`
+	TotalDeductions float64   `json:"total_deductions"`
+	NSSFEmployee    float64   `json:"nssf_employee"`
+	NHIFEmployee    float64   `json:"nhif_employee"`
+}
+
+func CalculateMonthlyTax(income float64) float64 {
+	switch {
+	case income <= 270000:
+		return 0
+
+	case income <= 520000:
+		return (income - 270000) * 0.08
+
+	case income <= 760000:
+		return 20000 + ((income - 520000) * 0.20)
+
+	case income <= 1000000:
+		return 68000 + ((income - 760000) * 0.25)
+
+	default: // income > 1000000
+		return 128000 + ((income - 1000000) * 0.30)
+	}
+}
 
 func (app *application) createPayrollHandler(c echo.Context) error {
 
@@ -60,7 +99,57 @@ func (app *application) getAllPayroll(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
 	}
 
-	return c.JSON(http.StatusOK, payroll)
+	e_payrolls := []EmployeePayroll{}
+
+	for _, p := range payroll {
+
+		bs, err := strconv.ParseFloat(p.BasicSalary, 64)
+
+		if err != nil {
+			slog.Error("failed to parse float", "Error", err.Error())
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+
+		}
+
+		nssfEmployee := bs * 0.10
+
+		nhifEmployee := bs * 0.03
+		if nhifEmployee < 20000 {
+			nhifEmployee = 20000
+		}
+
+		taxableIncome := bs - nssfEmployee
+
+		paye := CalculateMonthlyTax(taxableIncome)
+
+		loan := 0.0
+
+		totalDeductions := nssfEmployee + nhifEmployee + paye + loan
+
+		e := EmployeePayroll{
+			ID:              p.ID,
+			EmployeeID:      p.EmployeeID,
+			BasicSalary:     bs,
+			Tin:             p.Tin,
+			BankName:        p.BankName,
+			BankAccount:     p.BankAccount,
+			IsActive:        p.IsActive,
+			CreatedAt:       p.CreatedAt,
+			UpdatedAt:       p.UpdatedAt,
+			EmployeeName:    p.EmployeeName,
+			TaxableIncome:   taxableIncome,
+			PAYE:            paye,
+			Loan:            loan,
+			TotalDeductions: totalDeductions,
+			NSSFEmployee:    nssfEmployee,
+			NHIFEmployee:    nhifEmployee,
+		}
+
+		e_payrolls = append(e_payrolls, e)
+
+	}
+
+	return c.JSON(http.StatusOK, e_payrolls)
 
 }
 
