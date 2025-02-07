@@ -63,6 +63,11 @@ func (app *application) routes() *echo.Echo {
 	g.PUT("/announcements/:announcement_id", app.updateAnnouncementByIdHandler, app.requireAdminOrHr)
 	g.DELETE("/announcements/:announcement_id", app.deleteAnnouncementHandler, app.requireAdminOrHr)
 
+	// payroll
+	g.GET("/payroll", app.getAllPayroll, app.requireAdminOrHr)
+	g.POST("/payroll", app.createPayrollHandler, app.requireAdminOrHr)
+	g.GET("/payroll/:payroll_id", app.getPayroll, app.requireAdminOrHr)
+	g.DELETE("/payroll", app.DeletePayroll, app.requireAdminOrHr)
 
 	//  approvers
 
