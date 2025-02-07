@@ -111,3 +111,16 @@ CREATE TABLE  IF NOT EXISTS announcement (
     created_at TIMESTAMP(0) NOT NULL DEFAULT NOW()
 );
 
+
+CREATE TABLE  IF NOT EXISTS  payroll (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    employee_id UUID NOT NULL REFERENCES employee(id) ON DELETE CASCADE,
+    basic_salary NUMERIC(10, 2) NOT NULL,
+    tin TEXT NOT NULL,
+    bank_name TEXT NOT NULL,
+    bank_account TEXT NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW()
+);
+
