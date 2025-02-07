@@ -29,7 +29,6 @@ SELECT
     payroll.is_active AS payroll_is_active,
     payroll.created_at AS payroll_created_at,
     payroll.updated_at AS payroll_updated_at,
-    employee.id AS employee_id,
     employee.user_id,
     employee.name AS employee_name,
     employee.dob,
