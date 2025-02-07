@@ -30,6 +30,35 @@ type EmployeePayroll struct {
 	NHIFEmployee    float64   `json:"nhif_employee"`
 }
 
+type EmployeePayrollDetails struct {
+	PayrollID           uuid.UUID `json:"payroll_id"`
+	EmployeeID          uuid.UUID `json:"employee_id"`
+	BasicSalary         float64   `json:"basic_salary,string"`
+	TIN                 string    `json:"tin"`
+	BankName            string    `json:"bank_name"`
+	BankAccount         string    `json:"bank_account"`
+	PayrollIsActive     bool      `json:"payroll_is_active"`
+	PayrollCreatedAt    time.Time `json:"payroll_created_at"`
+	PayrollUpdatedAt    time.Time `json:"payroll_updated_at"`
+	EmployeeName        string    `json:"employee_name"`
+	DateOfBirth         time.Time `json:"dob"`
+	Avatar              string    `json:"avatar"`
+	Phone               string    `json:"phone"`
+	Gender              string    `json:"gender"`
+	JobTitle            string    `json:"job_title"`
+	Department          string    `json:"department"`
+	Address             string    `json:"address"`
+	EmployeeIsPresent   bool      `json:"employee_is_present"`
+	EmployeeJoiningDate time.Time `json:"employee_joining_date"`
+	EmployeeCreatedAt   time.Time `json:"employee_created_at"`
+	TaxableIncome       float64   `json:"taxable_income"`
+	PAYE                float64   `json:"paye"`
+	Loan                float64   `json:"loan"`
+	TotalDeductions     float64   `json:"total_deductions"`
+	NSSFEmployee        float64   `json:"nssf_employee"`
+	NHIFEmployee        float64   `json:"nhif_employee"`
+}
+
 func CalculateMonthlyTax(income float64) float64 {
 	switch {
 	case income <= 270000:
@@ -154,25 +183,71 @@ func (app *application) getAllPayroll(c echo.Context) error {
 }
 
 func (app *application) getPayroll(c echo.Context) error {
-
 	id := c.Param("payroll_id")
 
-	payroll_id, err := uuid.Parse(id)
-
+	payrollID, err := uuid.Parse(id)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid uuid"})
 	}
 
-	payroll, err := app.store.GetPayroll(c.Request().Context(), payroll_id)
-
+	payroll, err := app.store.GetPayroll(c.Request().Context(), payrollID)
 	if err != nil {
-		slog.Error("Error getting payroll by id ", "Error", err.Error())
+		slog.Error("Error getting payroll by id", "Error", err.Error())
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
 	}
 
-	return c.JSON(http.StatusOK, payroll)
+	
+	bs, err := strconv.ParseFloat(payroll.BasicSalary, 64)
+	if err != nil {
+		slog.Error("Failed to parse float", "Error", err.Error())
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+	}
 
+
+	nssfEmployee := bs * 0.10
+	nhifEmployee := bs * 0.03
+	if nhifEmployee < 20000 {
+		nhifEmployee = 20000
+	}
+
+	taxableIncome := bs - nssfEmployee
+	paye := CalculateMonthlyTax(taxableIncome)
+	loan := 0.0
+	totalDeductions := nssfEmployee + nhifEmployee + paye + loan
+
+
+	e := EmployeePayrollDetails{
+		PayrollID:         payroll.PayrollID,
+		EmployeeID:        payroll.EmployeeID,
+		BasicSalary:       bs,
+		TIN:               payroll.Tin,
+		BankName:          payroll.BankName,
+		BankAccount:       payroll.BankAccount,
+		PayrollIsActive:   payroll.PayrollIsActive,
+		PayrollCreatedAt:  payroll.PayrollCreatedAt,
+		PayrollUpdatedAt:  payroll.PayrollUpdatedAt,
+		EmployeeName:      payroll.EmployeeName,
+		DateOfBirth:       payroll.Dob,
+		Avatar:            payroll.Avatar,
+		Phone:             payroll.Phone,
+		Gender:            payroll.Gender,
+		JobTitle:          payroll.JobTitle,
+		Department:        payroll.Department,
+		Address:           payroll.Address,
+		EmployeeIsPresent: payroll.EmployeeIsPresent,
+		EmployeeJoiningDate: payroll.EmployeeJoiningDate,
+		EmployeeCreatedAt: payroll.EmployeeCreatedAt,
+		TaxableIncome:     taxableIncome,
+		PAYE:              paye,
+		Loan:              loan,
+		TotalDeductions:   totalDeductions,
+		NSSFEmployee:      nssfEmployee,
+		NHIFEmployee:      nhifEmployee,
+	}
+
+	return c.JSON(http.StatusOK, e)
 }
+
 
 func (app *application) DeletePayroll(c echo.Context) error {
 
