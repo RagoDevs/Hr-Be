@@ -56,7 +56,6 @@ SELECT
     employee.name AS employee_name
 FROM payroll
 JOIN employee ON payroll.employee_id = employee.id
-AND employee.is_present = TRUE
 AND payroll.is_active = TRUE;
 
 
