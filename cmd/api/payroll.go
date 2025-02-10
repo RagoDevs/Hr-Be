@@ -108,7 +108,18 @@ func (app *application) createPayrollHandler(c echo.Context) error {
 		BankAccount: input.BankAccount,
 	}
 
-	err := app.store.CreatePayroll(c.Request().Context(), args)
+	IsEmployee, err := app.store.IsEmployeeExisting(c.Request().Context(), args.EmployeeID)
+
+	if err != nil {
+		slog.Error("Error Checking If employee exists ", "Error", err.Error())
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+	}
+
+	if IsEmployee {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "employee id exists"})
+	}
+
+	err = app.store.CreatePayroll(c.Request().Context(), args)
 
 	if err != nil {
 		slog.Error("Error inserting payroll ", "Error", err.Error())
@@ -193,13 +204,11 @@ func (app *application) getPayroll(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
 	}
 
-	
 	bs, err := strconv.ParseFloat(payroll.BasicSalary, 64)
 	if err != nil {
 		slog.Error("Failed to parse float", "Error", err.Error())
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
 	}
-
 
 	nssfEmployee := bs * 0.10
 	nhifEmployee := bs * 0.03
@@ -212,39 +221,37 @@ func (app *application) getPayroll(c echo.Context) error {
 	loan := 0.0
 	totalDeductions := nssfEmployee + nhifEmployee + paye + loan
 
-
 	e := EmployeePayrollDetails{
-		PayrollID:         payroll.PayrollID,
-		EmployeeID:        payroll.EmployeeID,
-		BasicSalary:       bs,
-		TIN:               payroll.Tin,
-		BankName:          payroll.BankName,
-		BankAccount:       payroll.BankAccount,
-		PayrollIsActive:   payroll.PayrollIsActive,
-		PayrollCreatedAt:  payroll.PayrollCreatedAt,
-		PayrollUpdatedAt:  payroll.PayrollUpdatedAt,
-		EmployeeName:      payroll.EmployeeName,
-		DateOfBirth:       payroll.Dob,
-		Avatar:            payroll.Avatar,
-		Phone:             payroll.Phone,
-		Gender:            payroll.Gender,
-		JobTitle:          payroll.JobTitle,
-		Department:        payroll.Department,
-		Address:           payroll.Address,
-		EmployeeIsPresent: payroll.EmployeeIsPresent,
+		PayrollID:           payroll.PayrollID,
+		EmployeeID:          payroll.EmployeeID,
+		BasicSalary:         bs,
+		TIN:                 payroll.Tin,
+		BankName:            payroll.BankName,
+		BankAccount:         payroll.BankAccount,
+		PayrollIsActive:     payroll.PayrollIsActive,
+		PayrollCreatedAt:    payroll.PayrollCreatedAt,
+		PayrollUpdatedAt:    payroll.PayrollUpdatedAt,
+		EmployeeName:        payroll.EmployeeName,
+		DateOfBirth:         payroll.Dob,
+		Avatar:              payroll.Avatar,
+		Phone:               payroll.Phone,
+		Gender:              payroll.Gender,
+		JobTitle:            payroll.JobTitle,
+		Department:          payroll.Department,
+		Address:             payroll.Address,
+		EmployeeIsPresent:   payroll.EmployeeIsPresent,
 		EmployeeJoiningDate: payroll.EmployeeJoiningDate,
-		EmployeeCreatedAt: payroll.EmployeeCreatedAt,
-		TaxableIncome:     taxableIncome,
-		PAYE:              paye,
-		Loan:              loan,
-		TotalDeductions:   totalDeductions,
-		NSSFEmployee:      nssfEmployee,
-		NHIFEmployee:      nhifEmployee,
+		EmployeeCreatedAt:   payroll.EmployeeCreatedAt,
+		TaxableIncome:       taxableIncome,
+		PAYE:                paye,
+		Loan:                loan,
+		TotalDeductions:     totalDeductions,
+		NSSFEmployee:        nssfEmployee,
+		NHIFEmployee:        nhifEmployee,
 	}
 
 	return c.JSON(http.StatusOK, e)
 }
-
 
 func (app *application) DeletePayroll(c echo.Context) error {
 

@@ -189,6 +189,19 @@ func (q *Queries) GetPayroll(ctx context.Context, id uuid.UUID) (GetPayrollRow, 
 	return i, err
 }
 
+const isEmployeeExisting = `-- name: IsEmployeeExisting :one
+SELECT EXISTS (
+    SELECT 1 FROM payroll WHERE employee_id = $1
+)
+`
+
+func (q *Queries) IsEmployeeExisting(ctx context.Context, employeeID uuid.UUID) (bool, error) {
+	row := q.db.QueryRowContext(ctx, isEmployeeExisting, employeeID)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
+
 const updatePayroll = `-- name: UpdatePayroll :exec
 UPDATE payroll
 SET

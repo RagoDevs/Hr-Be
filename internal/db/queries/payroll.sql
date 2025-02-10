@@ -64,3 +64,9 @@ UPDATE payroll
 SET
     is_active = FALSE
 WHERE id = $1;
+
+
+-- name: IsEmployeeExisting :one
+SELECT EXISTS (
+    SELECT 1 FROM payroll WHERE employee_id = $1
+);
