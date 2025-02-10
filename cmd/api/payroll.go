@@ -142,10 +142,7 @@ func (app *application) getAllPayroll(c echo.Context) error {
 
 		nssfEmployee := bs * 0.10
 
-		nhifEmployee := bs * 0.03
-		if nhifEmployee < 20000 {
-			nhifEmployee = 20000
-		}
+		nhifEmployee := max(bs * 0.03, 20000)
 
 		taxableIncome := bs - nssfEmployee
 
