@@ -66,7 +66,7 @@ func (app *application) routes() *echo.Echo {
 	// payroll
 	g.GET("/payroll", app.getAllPayroll, app.requireAdminOrHr)
 	g.POST("/payroll", app.createPayrollHandler, app.requireAdminOrHr)
-	g.PUT("/payroll", app.updatePayrollHandler, app.requireAdminOrHr)
+	g.PUT("/payroll/:payroll_id", app.updatePayrollHandler, app.requireAdminOrHr)
 	g.GET("/payroll/:payroll_id", app.getPayroll, app.requireAdminOrHr)
 	g.DELETE("/payroll", app.DeletePayroll, app.requireAdminOrHr)
 
