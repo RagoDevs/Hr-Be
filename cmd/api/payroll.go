@@ -254,7 +254,7 @@ func (app *application) getPayroll(c echo.Context) error {
 
 func (app *application) DeletePayroll(c echo.Context) error {
 
-	id := c.Param("id")
+	id := c.Param("payroll_id")
 	payroll_id, err := uuid.Parse(id)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid uuid"})
@@ -272,7 +272,7 @@ func (app *application) DeletePayroll(c echo.Context) error {
 
 func (app *application) updatePayrollHandler(c echo.Context) error {
 
-	id := c.Param("id")
+	id := c.Param("payroll_id")
 	payroll_id, err := uuid.Parse(id)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid uuid"})
