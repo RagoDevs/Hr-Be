@@ -53,7 +53,8 @@ AND payroll.is_active = TRUE;
 -- name: GetAllPayroll :many
 SELECT 
     payroll.*, 
-    employee.name AS employee_name
+    employee.name AS employee_name,
+    employee.department
 FROM payroll
 JOIN employee ON payroll.employee_id = employee.id
 AND payroll.is_active = TRUE;

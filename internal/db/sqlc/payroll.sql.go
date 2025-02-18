@@ -54,7 +54,8 @@ func (q *Queries) DeletePayroll(ctx context.Context, id uuid.UUID) error {
 const getAllPayroll = `-- name: GetAllPayroll :many
 SELECT 
     payroll.id, payroll.employee_id, payroll.basic_salary, payroll.tin, payroll.bank_name, payroll.bank_account, payroll.is_active, payroll.created_at, payroll.updated_at, 
-    employee.name AS employee_name
+    employee.name AS employee_name,
+    employee.department
 FROM payroll
 JOIN employee ON payroll.employee_id = employee.id
 AND payroll.is_active = TRUE
@@ -71,6 +72,7 @@ type GetAllPayrollRow struct {
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 	EmployeeName string    `json:"employee_name"`
+	Department   string    `json:"department"`
 }
 
 func (q *Queries) GetAllPayroll(ctx context.Context) ([]GetAllPayrollRow, error) {
@@ -93,6 +95,7 @@ func (q *Queries) GetAllPayroll(ctx context.Context) ([]GetAllPayrollRow, error)
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.EmployeeName,
+			&i.Department,
 		); err != nil {
 			return nil, err
 		}
