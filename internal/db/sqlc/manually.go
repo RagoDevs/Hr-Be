@@ -68,6 +68,7 @@ func (q *Queries) GetAllPayroll(ctx context.Context, arg GetAllPayrollParams) ([
 	for rows.Next() {
 		var i GetAllPayrollRow
 		if err := rows.Scan(
+			&i.Count,
 			&i.ID,
 			&i.EmployeeID,
 			&i.BasicSalary,
