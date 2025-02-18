@@ -28,6 +28,7 @@ type EmployeePayroll struct {
 	TotalDeductions float64   `json:"total_deductions"`
 	NSSFEmployee    float64   `json:"nssf_employee"`
 	NHIFEmployee    float64   `json:"nhif_employee"`
+	Department      string    `json:"department"`
 }
 
 type EmployeePayrollDetails struct {
@@ -153,7 +154,7 @@ func (app *application) getAllPayroll(c echo.Context) error {
 
 		nssfEmployee := bs * 0.10
 
-		nhifEmployee := max(bs * 0.03, 20000)
+		nhifEmployee := max(bs*0.03, 20000)
 
 		taxableIncome := bs - nssfEmployee
 
@@ -180,6 +181,7 @@ func (app *application) getAllPayroll(c echo.Context) error {
 			TotalDeductions: totalDeductions,
 			NSSFEmployee:    nssfEmployee,
 			NHIFEmployee:    nhifEmployee,
+			Department:      p.Department,
 		}
 
 		e_payrolls = append(e_payrolls, e)
