@@ -272,3 +272,70 @@ func (app *application) DeletePayroll(c echo.Context) error {
 	return c.JSON(http.StatusOK, nil)
 
 }
+
+func (app *application) updatePayrollHandler(c echo.Context) error {
+
+	var input struct {
+		BasicSalary *float64 `json:"basic_salary"`
+		TIN         *string  `json:"tin"`
+		BankName    *string  `json:"bank_name"`
+		BankAccount *string  `json:"bank_account"`
+		IsActive    *bool    `json:"is_active"`
+	}
+
+	if err := c.Bind(&input); err != nil {
+		return err
+	}
+
+	if err := app.validator.Struct(input); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+	}
+
+	e, err := app.store.JustGetPayroll(c.Request().Context())
+
+	if err != nil {
+		slog.Error("Error Getting employee for update ", "Error", err.Error())
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+	}
+
+	if input.BasicSalary != nil {
+		rounded := float64(int(*input.BasicSalary*100)) / 100
+		bs := strconv.FormatFloat(rounded, 'f', 2, 64)
+		e.BasicSalary = bs
+	}
+
+	if input.BankAccount != nil {
+		e.BankAccount = *input.BankAccount
+	}
+
+	if input.BankName != nil {
+		e.BankName = *input.BankName
+	}
+
+	if input.TIN != nil {
+		e.Tin = *input.TIN
+	}
+
+	if input.IsActive != nil {
+		e.IsActive = *input.IsActive
+	}
+
+	args := db.UpdatePayrollParams{
+		ID:          e.ID,
+		BasicSalary: e.BasicSalary,
+		Tin:         e.Tin,
+		BankName:    e.BankName,
+		BankAccount: e.BankAccount,
+		IsActive:    e.IsActive,
+	}
+
+	err = app.store.UpdatePayroll(c.Request().Context(), args)
+
+	if err != nil {
+		slog.Error("Error updating payroll ", "Error", err.Error())
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{"success": "payroll update successful"})
+
+}
