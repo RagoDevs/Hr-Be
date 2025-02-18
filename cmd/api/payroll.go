@@ -290,10 +290,6 @@ func (app *application) updatePayrollHandler(c echo.Context) error {
 		return err
 	}
 
-	if err := app.validator.Struct(input); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
-	}
-
 	e, err := app.store.GetPayrollByID(c.Request().Context(), payroll_id)
 
 	if err != nil {
