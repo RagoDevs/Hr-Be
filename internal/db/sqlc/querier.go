@@ -43,12 +43,12 @@ type Querier interface {
 	GetLeaveCountDistr(ctx context.Context) ([]GetLeaveCountDistrRow, error)
 	GetLeavesByEmployeeId(ctx context.Context, employeeID uuid.UUID) ([]GetLeavesByEmployeeIdRow, error)
 	GetPayroll(ctx context.Context, id uuid.UUID) (GetPayrollRow, error)
+	GetPayrollByID(ctx context.Context, id uuid.UUID) (Payroll, error)
 	GetRoleByName(ctx context.Context, name string) (uuid.UUID, error)
 	GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error)
 	GetUserById(ctx context.Context, id uuid.UUID) (User, error)
 	GetUserByToken(ctx context.Context, arg GetUserByTokenParams) (GetUserByTokenRow, error)
 	IsEmployeeExisting(ctx context.Context, employeeID uuid.UUID) (bool, error)
-	JustGetPayroll(ctx context.Context) (Payroll, error)
 	PresentAbsentEmployeeById(ctx context.Context, arg PresentAbsentEmployeeByIdParams) error
 	UpdateAnnouncement(ctx context.Context, arg UpdateAnnouncementParams) error
 	UpdateContract(ctx context.Context, arg UpdateContractParams) error

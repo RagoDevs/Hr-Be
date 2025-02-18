@@ -192,26 +192,14 @@ func (q *Queries) GetPayroll(ctx context.Context, id uuid.UUID) (GetPayrollRow, 
 	return i, err
 }
 
-const isEmployeeExisting = `-- name: IsEmployeeExisting :one
-SELECT EXISTS (
-    SELECT 1 FROM payroll WHERE employee_id = $1
-)
-`
-
-func (q *Queries) IsEmployeeExisting(ctx context.Context, employeeID uuid.UUID) (bool, error) {
-	row := q.db.QueryRowContext(ctx, isEmployeeExisting, employeeID)
-	var exists bool
-	err := row.Scan(&exists)
-	return exists, err
-}
-
-const justGetPayroll = `-- name: JustGetPayroll :one
+const getPayrollByID = `-- name: GetPayrollByID :one
 SELECT id, employee_id, basic_salary, tin, bank_name, bank_account, is_active, created_at, updated_at
 FROM payroll
+WHERE id = $1
 `
 
-func (q *Queries) JustGetPayroll(ctx context.Context) (Payroll, error) {
-	row := q.db.QueryRowContext(ctx, justGetPayroll)
+func (q *Queries) GetPayrollByID(ctx context.Context, id uuid.UUID) (Payroll, error) {
+	row := q.db.QueryRowContext(ctx, getPayrollByID, id)
 	var i Payroll
 	err := row.Scan(
 		&i.ID,
@@ -225,6 +213,19 @@ func (q *Queries) JustGetPayroll(ctx context.Context) (Payroll, error) {
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const isEmployeeExisting = `-- name: IsEmployeeExisting :one
+SELECT EXISTS (
+    SELECT 1 FROM payroll WHERE employee_id = $1
+)
+`
+
+func (q *Queries) IsEmployeeExisting(ctx context.Context, employeeID uuid.UUID) (bool, error) {
+	row := q.db.QueryRowContext(ctx, isEmployeeExisting, employeeID)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
 }
 
 const updatePayroll = `-- name: UpdatePayroll :exec

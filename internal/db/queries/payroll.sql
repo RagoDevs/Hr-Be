@@ -71,6 +71,7 @@ SELECT EXISTS (
     SELECT 1 FROM payroll WHERE employee_id = $1
 );
 
--- name: JustGetPayroll :one
+-- name: GetPayrollByID :one
 SELECT *
-FROM payroll;
+FROM payroll
+WHERE id = $1;
