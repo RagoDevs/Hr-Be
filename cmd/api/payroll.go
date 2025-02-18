@@ -275,6 +275,12 @@ func (app *application) DeletePayroll(c echo.Context) error {
 
 func (app *application) updatePayrollHandler(c echo.Context) error {
 
+	id := c.Param("id")
+	payroll_id, err := uuid.Parse(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid uuid"})
+	}
+
 	var input struct {
 		BasicSalary *float64 `json:"basic_salary"`
 		TIN         *string  `json:"tin"`
@@ -291,7 +297,7 @@ func (app *application) updatePayrollHandler(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
-	e, err := app.store.JustGetPayroll(c.Request().Context())
+	e, err := app.store.GetPayrollByID(c.Request().Context(), payroll_id)
 
 	if err != nil {
 		slog.Error("Error Getting employee for update ", "Error", err.Error())
