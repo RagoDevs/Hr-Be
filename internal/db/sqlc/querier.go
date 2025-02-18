@@ -48,6 +48,7 @@ type Querier interface {
 	GetUserById(ctx context.Context, id uuid.UUID) (User, error)
 	GetUserByToken(ctx context.Context, arg GetUserByTokenParams) (GetUserByTokenRow, error)
 	IsEmployeeExisting(ctx context.Context, employeeID uuid.UUID) (bool, error)
+	JustGetPayroll(ctx context.Context) (Payroll, error)
 	PresentAbsentEmployeeById(ctx context.Context, arg PresentAbsentEmployeeByIdParams) error
 	UpdateAnnouncement(ctx context.Context, arg UpdateAnnouncementParams) error
 	UpdateContract(ctx context.Context, arg UpdateContractParams) error

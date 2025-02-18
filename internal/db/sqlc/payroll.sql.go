@@ -205,22 +205,42 @@ func (q *Queries) IsEmployeeExisting(ctx context.Context, employeeID uuid.UUID) 
 	return exists, err
 }
 
+const justGetPayroll = `-- name: JustGetPayroll :one
+SELECT id, employee_id, basic_salary, tin, bank_name, bank_account, is_active, created_at, updated_at
+FROM payroll
+`
+
+func (q *Queries) JustGetPayroll(ctx context.Context) (Payroll, error) {
+	row := q.db.QueryRowContext(ctx, justGetPayroll)
+	var i Payroll
+	err := row.Scan(
+		&i.ID,
+		&i.EmployeeID,
+		&i.BasicSalary,
+		&i.Tin,
+		&i.BankName,
+		&i.BankAccount,
+		&i.IsActive,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const updatePayroll = `-- name: UpdatePayroll :exec
 UPDATE payroll
 SET
-    employee_id = $2,
-    basic_salary = $3,
-    tin = $4,
-    bank_name = $5,
-    bank_account = $6,
-    is_active = $7,
+    basic_salary = $2,
+    tin = $3,
+    bank_name = $4,
+    bank_account = $5,
+    is_active = $6,
     updated_at = NOW()
 WHERE id = $1
 `
 
 type UpdatePayrollParams struct {
 	ID          uuid.UUID `json:"id"`
-	EmployeeID  uuid.UUID `json:"employee_id"`
 	BasicSalary string    `json:"basic_salary"`
 	Tin         string    `json:"tin"`
 	BankName    string    `json:"bank_name"`
@@ -231,7 +251,6 @@ type UpdatePayrollParams struct {
 func (q *Queries) UpdatePayroll(ctx context.Context, arg UpdatePayrollParams) error {
 	_, err := q.db.ExecContext(ctx, updatePayroll,
 		arg.ID,
-		arg.EmployeeID,
 		arg.BasicSalary,
 		arg.Tin,
 		arg.BankName,

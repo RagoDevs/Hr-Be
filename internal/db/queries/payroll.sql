@@ -8,12 +8,11 @@ INSERT INTO payroll (
 -- name: UpdatePayroll :exec
 UPDATE payroll
 SET
-    employee_id = $2,
-    basic_salary = $3,
-    tin = $4,
-    bank_name = $5,
-    bank_account = $6,
-    is_active = $7,
+    basic_salary = $2,
+    tin = $3,
+    bank_name = $4,
+    bank_account = $5,
+    is_active = $6,
     updated_at = NOW()
 WHERE id = $1;
 
@@ -71,3 +70,7 @@ WHERE id = $1;
 SELECT EXISTS (
     SELECT 1 FROM payroll WHERE employee_id = $1
 );
+
+-- name: JustGetPayroll :one
+SELECT *
+FROM payroll;
