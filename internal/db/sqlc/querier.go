@@ -30,7 +30,6 @@ type Querier interface {
 	GetAllEmployees(ctx context.Context) ([]GetAllEmployeesRow, error)
 	GetAllLeavesApproved(ctx context.Context) ([]GetAllLeavesApprovedRow, error)
 	GetAllLeavesUnSeenTopBottomSeen(ctx context.Context) ([]GetAllLeavesUnSeenTopBottomSeenRow, error)
-	GetAllPayroll(ctx context.Context) ([]GetAllPayrollRow, error)
 	GetAnnouncementById(ctx context.Context, id uuid.UUID) (Announcement, error)
 	GetAnnouncementsFromDate(ctx context.Context, announcementDate time.Time) ([]GetAnnouncementsFromDateRow, error)
 	GetContractById(ctx context.Context, id uuid.UUID) (Contract, error)

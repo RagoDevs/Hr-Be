@@ -11,6 +11,7 @@ type Store interface {
 	TxnUpdateUserEmployee(ctx context.Context, user UpdateUserByIdParams, emp UpdateEmployeeByIdParams) error
 	TxnDeleteUserEmployee(ctx context.Context, args TxnUserEmployeeDelete) error
 	TxnAcceptedRejectLeave(ctx context.Context, args ApproveRejectLeaveParams) error
+	GetAllPayroll(ctx context.Context, arg GetAllPayrollParams) ([]GetAllPayrollRow, error)
 }
 
 type SQLStore struct {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"log/slog"
+	"math"
 	"net/http"
 	"strconv"
 	"time"
@@ -10,6 +11,21 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
+
+type Metadata struct {
+	CurrentPage  int `json:"current_page"`
+	PageSize     int `json:"page_size"`
+	FirstPage    int `json:"first_page"`
+	From         int `json:"from"`
+	To           int `json:"to"`
+	LastPage     int `json:"last_page"`
+	TotalRecords int `json:"total_records"`
+}
+
+type OutputPayrolls struct {
+	Payrolls []EmployeePayroll
+	Metadata Metadata
+}
 
 type EmployeePayroll struct {
 	ID              uuid.UUID `json:"id"`
@@ -133,16 +149,58 @@ func (app *application) createPayrollHandler(c echo.Context) error {
 
 func (app *application) getAllPayroll(c echo.Context) error {
 
-	payroll, err := app.store.GetAllPayroll(c.Request().Context())
+	page_str := c.QueryParam("page")
+	page, _ := strconv.Atoi(page_str)
+	if page < 1 {
+		page = 1
+	}
+
+	pagesize_str := c.QueryParam("pagesize")
+	pagesize, _ := strconv.Atoi(pagesize_str)
+	if pagesize < 20 {
+		pagesize = 20
+	}
+
+	offset := (page - 1) * pagesize
+
+	limit := pagesize
+
+	bank := c.QueryParam("bank")
+	department := c.QueryParam("department")
+	employee := c.QueryParam("employee")
+
+	args := db.GetAllPayrollParams{
+		Limit:        int32(limit),
+		Offset:       int32(offset),
+		EmployeeName: employee,
+		BankName:     bank,
+		Department:   department,
+	}
+
+	payrolls, err := app.store.GetAllPayroll(c.Request().Context(), args)
 
 	if err != nil {
 		slog.Error("Error getting all payroll ", "Error", err.Error())
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
 	}
 
+	var metadata Metadata
+
+	if len(payrolls) > 0 {
+		metadata = CalculateMetadata(int(payrolls[0].Count), page, pagesize)
+	} else {
+		metadata.From = 0
+		metadata.To = 0
+		metadata.CurrentPage = 0
+		metadata.LastPage = 0
+		metadata.PageSize = 0
+		metadata.From = 0
+		metadata.TotalRecords = 0
+
+	}
 	e_payrolls := []EmployeePayroll{}
 
-	for _, p := range payroll {
+	for _, p := range payrolls {
 
 		bs, err := strconv.ParseFloat(p.BasicSalary, 64)
 
@@ -188,7 +246,15 @@ func (app *application) getAllPayroll(c echo.Context) error {
 
 	}
 
-	return c.JSON(http.StatusOK, e_payrolls)
+	var output OutputPayrolls
+
+	metadata.From = ((metadata.CurrentPage - 1) * metadata.PageSize) + 1
+	metadata.To = ((metadata.CurrentPage - 1) * metadata.PageSize) + len(e_payrolls)
+
+	output.Metadata = metadata
+	output.Payrolls = e_payrolls
+
+	return c.JSON(http.StatusOK, output)
 
 }
 
@@ -213,7 +279,7 @@ func (app *application) getPayroll(c echo.Context) error {
 	}
 
 	nssfEmployee := bs * 0.10
-	nhifEmployee := max(bs * 0.03, 20000)
+	nhifEmployee := max(bs*0.03, 20000)
 
 	taxableIncome := bs - nssfEmployee
 	paye := CalculateMonthlyTax(taxableIncome)
@@ -337,4 +403,19 @@ func (app *application) updatePayrollHandler(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, map[string]string{"success": "payroll update successful"})
 
+}
+
+func CalculateMetadata(totalRecords, page, PageSize int) Metadata {
+
+	if totalRecords == 0 {
+		return Metadata{}
+	}
+
+	return Metadata{
+		CurrentPage:  page,
+		PageSize:     PageSize,
+		FirstPage:    1,
+		LastPage:     int(math.Ceil(float64(totalRecords) / float64(PageSize))),
+		TotalRecords: totalRecords,
+	}
 }
