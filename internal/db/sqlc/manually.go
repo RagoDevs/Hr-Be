@@ -17,8 +17,8 @@ JOIN employee ON payroll.employee_id = employee.id
 WHERE payroll.is_active = TRUE
 AND (
     ($3 = '' OR payroll.bank_name ILIKE '%' || $3 || '%') AND
-    ($4 = '' OR employee.department ILIKE '%' || $3 || '%') AND
-    ($5 = '' OR employee.name ILIKE '%' || $3 || '%')
+    ($4 = '' OR employee.department ILIKE '%' || $4 || '%') AND
+    ($5 = '' OR employee.name ILIKE '%' || $5 || '%')
 )
 
 ORDER BY 
